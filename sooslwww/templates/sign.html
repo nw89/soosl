@@ -1,12 +1,43 @@
 {% extends "master.html" %}
 
+{% block scripts %}
+<!-- Include jQuery and jQuery UI -->
+    <script type='text/javascript' src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+    <!-- Many more themes to chose from... go to http://jqueryui.com/themeroller! -->
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/dark-hive/jquery-ui.css">
+
+    <script type="text/javascript" src="{{ STATIC_URL }}minplayer/bin/minplayer.compressed.js"></script>
+
+    <!-- Include the template CSS and JS files. -->
+    <link rel="stylesheet" href="{{ STATIC_URL }}minplayer/templates/default/css/minplayer_default.css">
+    <script type="text/javascript" src="{{ STATIC_URL }}minplayer/templates/default/js/minplayer.playLoader.default.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}minplayer/templates/default/js/minplayer.controller.default.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}minplayer/templates/default/js/minplayer.default.js"></script>
+    <script type="text/javascript">
+      $(function() {
+	$("#h264").minplayer({
+	  width: '640px',
+	  height: '526px'
+	});
+      });
+    </script>
+    <!-- <link rel="stylesheet" type="text/css" media="screen" href="{{ STATIC_URL }}minplayer/stylesheets/stylesheet.css"> -->
+{% endblock %}
+
 {% block title %}View Sign{% endblock %}
 
 {% block content %}
+
+<video id="h264" src="{% url sooslwww.views.video sign.id %}"></video>
+
+<!-- <video  src="{% url sooslwww.views.video sign.id %}"></video> -->
 <!-- <video width="640" height="512" controls="controls"> -->
 <!--   <source src="{% url sooslwww.views.video sign.id %}" type="video/mp4" /> -->
 <!--   <object data="{% url sooslwww.views.video sign.id %}" width="640" height="512"> -->
- <embed src="{% url sooslwww.views.video sign.id %}" width="640" height="512" />
+ <!-- <embed src="{% url sooslwww.views.video sign.id %}" width="640" height="512" /> -->
 <!--   </object> -->
 <!-- </video> -->
+
 {% endblock %}
