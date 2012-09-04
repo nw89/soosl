@@ -4,20 +4,20 @@ from django.db import models
 
 class WrittenLanguage(models.Model):
     def __unicode__(self):
-        return self.name
+	return self.name
 
     name = models.TextField()
 
 class Sign(models.Model):
     def __unicode__(self):
-        return self.videopath;
+	return self.videopath;
 
-    videopath = models.FileField(upload_to="videos/")
+    videohash = models.CharField(max_length = 40)
     deleted = models.BooleanField(False)
 
 class Gloss(models.Model):
     def __unicode__(self):
-        return self.text;
+	return self.text;
 
     language = models.ForeignKey(WrittenLanguage)
     text = models.TextField()
