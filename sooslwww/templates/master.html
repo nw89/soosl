@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta CONTENT="WWW@sil.org" HTTP-EQUIV="Reply-to">
+<meta CONTENT="Document" NAME="Object-type">
+<title>SooSL web version</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="{{ STATIC_URL }}css/sil_org.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="logo_bar">
+    <img src="{{ STATIC_URL }}images/left_column_logo.gif" alt="SIL International Home" width="144" height="144" hspace="0" vspace="0" border="0" align="left"/>
+</div>
+<div id="top_banner"></div>
+<div id="nav_top">
+    <a class="menuItem" href="/sil/"  title='About SIL International'>ABOUT SIL</a>
+    <a class="menuItem" href="/sitemap.html"  title='Site map for SIL International'>SITE MAP</a>
+    <a class="menuItem" href="/search.html" title='Search SIL International’s website'>SEARCH</a>
+    <a class="menuItem" href="/sil/contact.html" title='Contact information for SIL'>CONTACT US</a>
+</div>
+
+</script>
+<div id="main">
+        <h2 class="HomeHead">{% block title %} SooSL Web Version  {% endblock %}</h2>
+
+        {% block content %}
+
+        {% endblock %}
+
+</div>
+</body>
+</html>

@@ -12,8 +12,8 @@ class Sign(models.Model):
     def __unicode__(self):
         return self.videopath;
 
-    videopath = models.CharField(max_length=256)
-    deleted = models.BooleanField()
+    videopath = models.FileField(upload_to="videos/")
+    deleted = models.BooleanField(False)
 
 class Gloss(models.Model):
     def __unicode__(self):

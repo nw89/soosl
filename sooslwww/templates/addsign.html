@@ -1,0 +1,19 @@
+{% extends "master.html" %}
+
+{% block title %}Add new Sign{% endblock %}
+
+{% block content %}
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url sooslwww.views.add_sign %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <p>{{ form.non_field_errors }}</p>
+  <p>{{ form.videoFile.label_tag }} {{ form.videoFile.help_text }}</p>
+  <p>
+    {{ form.videoFile.errors }}
+    {{ form.videoFile }}
+  </p>
+  <p><input type="submit" value="Upload" /></p>
+</form>
+
+{% endblock %}
