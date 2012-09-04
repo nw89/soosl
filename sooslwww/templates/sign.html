@@ -1,1 +1,12 @@
-<h1>Sign {{sign_id}}</h1>
+{% extends "master.html" %}
+
+{% block title %}View Sign{% endblock %}
+
+{% block content %}
+<!-- <video width="640" height="512" controls="controls"> -->
+<!--   <source src="{% url sooslwww.views.video sign.id %}" type="video/mp4" /> -->
+<!--   <object data="{% url sooslwww.views.video sign.id %}" width="640" height="512"> -->
+ <embed src="{% url sooslwww.views.video sign.id %}" width="640" height="512" />
+<!--   </object> -->
+<!-- </video> -->
+{% endblock %}

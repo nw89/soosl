@@ -1,4 +1,4 @@
-# Create your views here.
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.forms.util import ErrorList
 from django.http import Http404, HttpResponse, HttpResponseRedirect
@@ -9,6 +9,7 @@ from sooslwww.forms import AddSignForm
 from sooslwww.models import Sign
 
 from sooslwww.videoHandler import VideoUploadHandler
+import utils
 
 def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
@@ -16,11 +17,11 @@ def index(request):
 def sign(request, sign_id):
     requested_sign = get_object_or_404(Sign, id=sign_id);
 
-    t = loader.get_template('sign.html')
-    c = Context({
-	    'sign_id': sign_id,
-	    })
-    return HttpResponse(t.render(c))
+    return render_to_response(
+	'sign.html',
+	{'sign': requested_sign},
+	context_instance=RequestContext(request)
+	)
 
 def add_sign(request):
     if request.method == 'POST':
@@ -59,3 +60,19 @@ def add_sign(request):
 	{'form': form},
 	context_instance=RequestContext(request)
 	)
+
+def thumbnail(request, sign_id):
+    requested_sign = get_object_or_404(Sign, id=sign_id)
+
+    filePath = "%s/videos/thumbnails/%s.gif" % (
+	getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
+
+    return utils.generateFileHttpResponse(filePath, "image/gif");
+
+def video(request, sign_id):
+    requested_sign = get_object_or_404(Sign, id=sign_id)
+
+    filePath = "%s/videos/mp4/%s.mp4" % (
+	getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
+
+    return utils.generateFileHttpResponse(filePath, "video/mp4");

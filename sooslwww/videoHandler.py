@@ -30,9 +30,9 @@ class VideoUploadHandler():
 	    os.remove(file)
 
     def obtainFilePath(self, type):
-	if type == "flv":
-	    folder = "flv"
-	    ending = ".flv"
+	if type == "mp4":
+	    folder = "mp4"
+	    ending = ".mp4"
 
 	elif type == "thumbnail":
 	    folder = "thumbnails"
@@ -56,7 +56,7 @@ class VideoUploadHandler():
 	return self._hash
 
     def encodeVideo(self):
-	success = self.generateFLV()
+	success = self.generateMP4()
 	if not success:
 	    return False
 
@@ -67,11 +67,11 @@ class VideoUploadHandler():
 	return True
 
 
-    def generateFLV(self):
-	createFLVCommand = "ffmpeg -y -i %s -an -vcodec libx264 -f flv -s 640x512 %s" % (
-	    self._workingFileName, self.obtainFilePath("flv"))
+    def generateMP4(self):
+	createMP4Command = "ffmpeg -y -i %s -an -vcodec libx264 -f mp4 -s 640x512 %s" % (
+	    self._workingFileName, self.obtainFilePath("mp4"))
 
-	statusoutput = commands.getstatusoutput(createFLVCommand)
+	statusoutput = commands.getstatusoutput(createMP4Command)
 
 	#Print output
 	print 80*"~"
@@ -82,7 +82,7 @@ class VideoUploadHandler():
 
     def generateThumbnail(self):
 	createThumbnailsCommand1 = "ffmpeg -y -i %s -an -r 3 -s 128x96 %s" % (
-	    self.obtainFilePath("flv"),
+	    self.obtainFilePath("mp4"),
 	    self.obtainFilePath("capturedframesffmpeg"))
 
 	statusoutput = commands.getstatusoutput(createThumbnailsCommand1)
