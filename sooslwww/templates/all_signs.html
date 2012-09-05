@@ -1,0 +1,15 @@
+{% extends "master.html" %}
+
+{% block title %}All Signs{% endblock %}
+
+{% block customcss %}
+<link href="{{ STATIC_URL }}css/all_signs.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block content %}
+<div id="signs_grid">
+{% for sign in all_signs %}
+<a href="{% url sooslwww.views.sign sign.id %}"><img class="sign_thumbnail" src="{% url sooslwww.views.thumbnail sign.id %}" alt="sign" /></a>
+{% endfor %}
+</div>
+{% endblock %}

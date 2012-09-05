@@ -23,6 +23,14 @@ def sign(request, sign_id):
 	context_instance=RequestContext(request)
 	)
 
+def all_signs(request):
+    all_signs = Sign.objects.all()
+    return render_to_response(
+	'all_signs.html',
+	{'all_signs': all_signs},
+	context_instance=RequestContext(request)
+	)
+
 def add_sign(request):
     if request.method == 'POST':
 	form = AddSignForm(request.POST, request.FILES)

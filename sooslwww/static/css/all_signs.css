@@ -1,0 +1,9 @@
+img.sign_thumbnail {
+    border: 1px #999 solid;
+    padding: 1px;
+    margin: 5px;
+    height: 96px;
+    width: 128px;
+    display: inline-block;
+    background-color: #fff;
+}

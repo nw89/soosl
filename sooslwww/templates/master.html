@@ -5,7 +5,7 @@
 <meta CONTENT="Document" NAME="Object-type">
 <title>SooSL web version</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link href="{{ STATIC_URL }}css/sil_org.css" rel="stylesheet" type="text/css">{%block scripts %}{% endblock %}
+<link href="{{ STATIC_URL }}css/sil_org.css" rel="stylesheet" type="text/css">{% block customcss %}{% endblock %}{%block scripts %}{% endblock %}
 </head>
 <body>
 <div id="logo_bar">
@@ -13,10 +13,8 @@
 </div>
 <div id="top_banner"></div>
 <div id="nav_top">
-    <a class="menuItem" href="/sil/"  title='About SIL International'>ABOUT SIL</a>
-    <a class="menuItem" href="/sitemap.html"  title='Site map for SIL International'>SITE MAP</a>
-    <a class="menuItem" href="/search.html" title='Search SIL International’s website'>SEARCH</a>
-    <a class="menuItem" href="/sil/contact.html" title='Contact information for SIL'>CONTACT US</a>
+    <a class="menuItem" href="{% url sooslwww.views.all_signs %}">VIEW ALL SIGNS</a>
+    <a class="menuItem" href="{% url sooslwww.views.add_sign %}">ADD SIGN</a>
 </div>
 
 </script>
