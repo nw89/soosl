@@ -17,12 +17,12 @@
     <script type="text/javascript" src="{{ STATIC_URL }}minplayer/templates/default/js/minplayer.default.js"></script>
     <script type="text/javascript">
       $(function() {
-	$("#h264").minplayer({
-	  width: '640px',
-	  height: '545px',
-	  loop: true,
-	   autoplay: true
-	});
+        $("#h264").minplayer({
+          width: '640px',
+          height: '545px',
+          loop: true,
+           autoplay: true
+        });
       });
     </script>
     <!-- <link rel="stylesheet" type="text/css" media="screen" href="{{ STATIC_URL }}minplayer/stylesheets/stylesheet.css"> -->
@@ -30,16 +30,25 @@
 
 {% block title %}View Sign{% endblock %}
 
+{% block customcss %}
+<link href="{{ STATIC_URL }}css/sign.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+
 {% block content %}
 
+<div id="container">
+<div id="tag_grid{% if edit_mode %}_edit{% endif %}">
+{{ tag_text }}
+{% if edit_mode %}
+<a id="tags_link" href="{% url sooslwww.views.sign sign.id %}">Finished</a>
+{% else %}
+<a id="tags_link" href="{% url sooslwww.views.edit_sign sign.id %}">Edit</a>
+{% endif %}
+</div>
+<div id="video{% if edit_mode %}_edit{% endif %}">
 <video id="h264" src="{% url sooslwww.views.video sign.id %}"></video>
-
-<!-- <video  src="{% url sooslwww.views.video sign.id %}"></video> -->
-<!-- <video width="640" height="512" controls="controls"> -->
-<!--   <source src="{% url sooslwww.views.video sign.id %}" type="video/mp4" /> -->
-<!--   <object data="{% url sooslwww.views.video sign.id %}" width="640" height="512"> -->
- <!-- <embed src="{% url sooslwww.views.video sign.id %}" width="640" height="512" /> -->
-<!--   </object> -->
-<!-- </video> -->
+</div>
+</div>
 
 {% endblock %}
