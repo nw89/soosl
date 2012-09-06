@@ -6,15 +6,14 @@ a#tags_link {
 }
 
 div#tag_grid, div#tag_grid_edit {
-    margin-top: 20px;
-    margin-bottom: 20px;
     border: 1px #999 solid;
 }
 
 div#tag_grid
 {
-    float: right;
-    width: 130px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 102px;
 
 }
 
@@ -30,8 +29,7 @@ div#video div#video_edit {
 
 
 div#video {
-    width: 640px;
-    float: left;
+    width: 512px;
 }
 
 div#video_edit {

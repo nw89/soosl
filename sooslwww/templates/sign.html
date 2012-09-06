@@ -18,8 +18,8 @@
     <script type="text/javascript">
       $(function() {
         $("#h264").minplayer({
-          width: '640px',
-          height: '545px',
+          width: '512px',
+          height: '443px',
           loop: true,
            autoplay: true
         });
@@ -32,23 +32,29 @@
 
 {% block customcss %}
 <link href="{{ STATIC_URL }}css/sign.css" rel="stylesheet" type="text/css">
+
 {% endblock %}
 
+{% block left %}
+{% load language_chooser %}
+{% language_chooser %}
+{{ gloss_text }}
+{% endblock %}
 
 {% block content %}
-
-<div id="container">
-<div id="tag_grid{% if edit_mode %}_edit{% endif %}">
-{{ tag_text }}
-{% if edit_mode %}
-<a id="tags_link" href="{% url sooslwww.views.sign sign.id %}">Finished</a>
-{% else %}
-<a id="tags_link" href="{% url sooslwww.views.edit_sign sign.id %}">Edit</a>
-{% endif %}
-</div>
 <div id="video{% if edit_mode %}_edit{% endif %}">
 <video id="h264" src="{% url sooslwww.views.video sign.id %}"></video>
 </div>
+{% endblock %}
+
+{% block right %}
+<div id="tag_grid{% if edit_mode %}_edit{% endif %}">
+  {{ tag_text }}
+  {% if edit_mode %}
+  <a id="tags_link" href="{% url sooslwww.views.sign sign.id %}">Finished</a>
+  {% else %}
+  <a id="tags_link" href="{% url sooslwww.views.edit_sign sign.id %}">Edit</a>
+  {% endif %}
 </div>
 
 {% endblock %}

@@ -1,0 +1,6 @@
+<table>
+  <tr>
+    <th>Language</th><th>Gloss</th>
+  </tr>
+  {{ glosses|safe }}
+</table>

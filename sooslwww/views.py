@@ -6,10 +6,13 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import Context, loader, RequestContext
 
 from sooslwww.forms import AddSignForm
-from sooslwww.models import Sign, Tag
+from sooslwww.models import Sign, Tag, WrittenLanguage
 
+from sooslwww.LanguageChooser import SetDefaultLanguage
+from sooslwww.GlossRenderer import GlossRenderer
 from sooslwww.TagRenderer import TagRenderer
 from sooslwww.videoHandler import VideoUploadHandler
+
 
 import string
 import utils
@@ -54,13 +57,16 @@ def sign(request, sign_id, edit=False):
 
     print tagText
 
+    glossRenderer = GlossRenderer()
+    glossText = glossRenderer.RenderSign(request, requested_sign)
+
     return render_to_response(
         'sign.html',
         {'sign': requested_sign,
          'tag_text': tagText,
+         'gloss_text': glossText,
          'edit_mode': edit},
-        context_instance=RequestContext(request)
-        )
+        context_instance=RequestContext(request))
 
 def edit_sign(request, sign_id):
     return sign(request, sign_id, True)
@@ -186,6 +192,16 @@ def add_sign(request):
         {'form': form},
         context_instance=RequestContext(request)
         )
+
+def select_language(request, url_string, language_id):
+    if not WrittenLanguage.objects.filter(id=language_id).exists():
+        raise Http404
+
+    SetDefaultLanguage(request, language_id)
+    return HttpResponseRedirect(
+        '/sooslwww/' + url_string
+        )
+
 
 def thumbnail(request, sign_id):
     requested_sign = get_object_or_404(Sign, id=sign_id)

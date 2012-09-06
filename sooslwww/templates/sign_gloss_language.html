@@ -1,0 +1,9 @@
+{% for gloss in glosses %}
+  <tr>
+    {% if forloop.first %}
+    <td rowspan="{{glosses|length}}">{{ language }}</td>
+    {% endif %}
+
+    <td>{{ gloss.text }}</td>
+  </tr>
+{% endfor %}

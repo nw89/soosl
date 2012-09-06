@@ -2,19 +2,17 @@
 @import "side_nav.css";
 
 html{
-        margin-left: 0;
-        margin-top: 0;
+    margin-left: 0;
+    margin-top: 0;
 }
 
 body {
-        font-family: Arial, Helvetica, sans-serif;
-        padding: 0;
-        color: #333333;
-        position: relative;
-        margin: 0px;
-        background-color: #FFFFFF;
-        background-image: url(/static/images/left_column_purple.gif);
-        background-repeat: repeat-y;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+    color: #333333;
+    position: relative;
+    margin: 0px;
+    background-color: #FFFFFF;
 }
 
 /*------------------------------------Top of page start------------------------------------*/
@@ -24,278 +22,302 @@ body {
     left : 0;
 }
 #top_banner{
-        position: static;
-        top : 0px;
-        height: 81px;
-        margin-left : 144px;
-        background-color: #c3cb2a;
+    position: static;
+    top : 0px;
+    height: 81px;
+    margin-left : 144px;
+    background-color: #c3cb2a;
 }
 #top_banner img {
-        float: right;
+    float: right;
 }
 
 #nav_top {
-        padding: 1px 0px 1px 30px;
-        font-size: 76%;
-        background-color : white;
-        position: static;
-        left: 144px;
-        top: 36px;
-        margin-left: 144px;
+    padding: 1px 0px 1px 30px;
+    font-size: 76%;
+    background-color : white;
+    position: static;
+    left: 144px;
+    top: 36px;
+    margin-left: 144px;
 }
 #nav_top a.menuItem {
-  background-color: transparent;
-  color: black;
-  padding: 0px 8px 0px 3px;
-  position: relative;
-  text-decoration: none;
+    background-color: transparent;
+    color: black;
+    padding: 0px 8px 0px 3px;
+    position: relative;
+    text-decoration: none;
 }
 #nav_top a.menuItem:link,
 #nav_top a.menuItem:visited
 {
-        color: black;
-        text-decoration : none;
+    color: black;
+    text-decoration : none;
 }
 #nav_top a.menuItem:hover {
-        color: black;
-        text-decoration : none;
+    color: black;
+    text-decoration : none;
 }
 #specialannouncement {
-        margin-left: 154px;
-        margin-right: 5px;
-        position:  static;
-        font-size: 120%;
-        font-style: italic;
-        font-weight: bold;
-        color: #CC0000;
+    margin-left: 154px;
+    margin-right: 5px;
+    position:  static;
+    font-size: 120%;
+    font-style: italic;
+    font-weight: bold;
+    color: #CC0000;
 }
 
 /*------------------------------------Top of page end------------------------------------*/
 
 /*------------------------------------Contents menu section begin------------------------------------*/
 #contents_menu{
-        background-color : transparent;
+    background-color : transparent;
 }
 #contents_menu a,
 #contents_menu a:hover,
 #contents_menu a:visited {
-        color: #336699;
-        background-color : transparent;
-        font-weight: bold;
+    color: #336699;
+    background-color : transparent;
+    font-weight: bold;
 }
 #contents_menu a:visited{
-        color: #99CCFF;
+    color: #99CCFF;
 }
 #contents_menu a:hover{
-        color: #FFCC66;
+    color: #FFCC66;
 }
 
 /*------------------------------------Contents menu section end------------------------------------*/
 
-#main {
-        margin-left: 174px; /*added 20 px 25-Feb-2008*/
-        margin-right: 25px; /*added 20 px 25-Feb-2008*/
-        position:  static;
-        width:792px; /*added fixed width to accomodate the Spry tabbed panels. Will be using this in the site redesign anyway.*/
+h1.HomeHead
+{
+    margin-left: 164px
 }
 
+#container {
+min-width: 716px;
+}
+
+#left, #main, #right
+{
+    padding-left: 30px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#left {
+    width: 104px;
+    float: left;
+    margin-bottom: 100%;
+}
+
+
+#main {
+    width: 512px;
+
+}
+
+#right {
+    width: 194px;
+}
+
+
 #abstract {
-        margin-right: 30px;
-        margin-left: 30px;
+    margin-right: 30px;
+    margin-left: 30px;
 }
 
 #poetry {
-        text-align: center;
+    text-align: center;
 }
 
 #announcement {
 }
 #footer {
-        text-align: center;
-        clear: left;
+    text-align: center;
+    clear: left;
 }
 
 a {
-        text-decoration: underline;
+    text-decoration: underline;
 }
 a:link {
-        color: #336699;
+    color: #336699;
 }
 a:hover {
-        color: #3399CC;
-        text-decoration:underline;
+    color: #3399CC;
+    text-decoration:underline;
 }
 a:visited {
-        color: #6600CC;
+    color: #6600CC;
 }
 a:active {
-        color: #CC3333;
+    color: #CC3333;
 }
 td {
-        font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 th {
-        font-family: Arial, Helvetica, sans-serif;
-        font-weight: bold;
-        text-align: left;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    text-align: left;
 }
-h1 {
-        color: #990000;
-}
-h2, h3, h4, h5 {
-        color: #999999;
+
+h1, h2, h3, h4, h5 {
+    color: #999999;
 }
 
 .bullets_by_pix { /*Lists appearing to the right of a pix lose their bullets, use as <ul class="bullets_by_pix"> */
-        list-style-position: inside;
+    list-style-position: inside;
 }
 
 #3columns {
-        margin-right: 20px;
-        width: 25%;
-        float: left;
+    margin-right: 20px;
+    width: 25%;
+    float: left;
 }
 #ThreeColumns {
-        margin-right: 20px;
-        width: 25%;
-        float: left;
+    margin-right: 20px;
+    width: 25%;
+    float: left;
 }
 .3columns {
-        margin-right: 20px;
-        width: 25%;
-        float: left;
+    margin-right: 20px;
+    width: 25%;
+    float: left;
 }
 .ThreeColumns {
-        margin-right: 20px;
-        width: 25%;
-        float: left;
+    margin-right: 20px;
+    width: 25%;
+    float: left;
 }
 .announcement {
-        color: #FF0000;
-        font-style: italic;
+    color: #FF0000;
+    font-style: italic;
 }
 .article_nav {
-        text-align: right;
+    text-align: right;
 }
 .biblio {
-        padding-left: 1em;
-        text-indent: -1em;
+    padding-left: 1em;
+    text-indent: -1em;
 }
 .breadtrail {
-         font-size: 80%;
-        color: #999999;
+    font-size: 80%;
+    color: #999999;
 }
 .breadcrumbs { /*changed the terminology*/
-         font-size: 80%;
-        color: #999999;
+    font-size: 80%;
+    color: #999999;
 }
 .bottommenu {
-        font-weight: bold;
+    font-weight: bold;
 }
 .callout {
-        background-color: #FFFFCC;
-        border: thin solid #000000;
-        padding: 5px;
+    background-color: #FFFFCC;
+    border: thin solid #000000;
+    padding: 5px;
 }
 .centercontent {
-        text-align: center;
+    text-align: center;
 }
 .codeExample {
-        font-family: "Courier New", Courier, mono;
-        font-size: small;
+    font-family: "Courier New", Courier, mono;
+    font-size: small;
 }
 .copyright {
-        font-size: smaller;
-        text-align: center;
+    font-size: smaller;
+    text-align: center;
 }
 .experience {
-        padding-left: 6em;
-        text-indent: -6em;
+    padding-left: 6em;
+    text-indent: -6em;
 }
 .filename {
-        font-family: "Courier New", Courier, mono;
+    font-family: "Courier New", Courier, mono;
 }
 .footnote {
-        font-size: 90%;
+    font-size: 90%;
 }
 .inlinetitle {
-        font-weight: bold;
+    font-weight: bold;
 }
 .itemlabel {
-        font-weight: bold;
+    font-weight: bold;
 }
 .jobtitle {
-        font-weight: bold;
+    font-weight: bold;
 }
 .listNoBullet {
-        list-style-type: none;
-        list-style-image: none;
+    list-style-type: none;
+    list-style-image: none;
 }
 .mission {
-        font-style: italic;
+    font-style: italic;
 }
 .pixwithcaptions { /*forces centered alignment*/
-        text-align: center;
-        font-size: smaller;
+    text-align: center;
+    font-size: smaller;
 }
 .pixCaption { /*inherits paragraph alignment*/
-        font-size: smaller;
-        padding-bottom: 10px;
+    font-size: smaller;
+    padding-bottom: 10px;
 }
 .thumbnail {
-        padding: 10px;
+    padding: 10px;
 }
 .thumbnailCaptionRight {
-        font-size: smaller;
-        padding-left: 10px;
+    font-size: smaller;
+    padding-left: 10px;
 }
 .poetry {
-        text-align: center;
+    text-align: center;
 }
 .pubtitle {
-        font-style: italic;
+    font-style: italic;
 }
 .quotation {
-        font-size: smaller;
+    font-size: smaller;
 }
 #quotationIndent {
-        margin-right: 3em;
-        margin-left: 3em;
+    margin-right: 3em;
+    margin-left: 3em;
 }
 .quotationIndent {
-        margin-right: 3em;
-        margin-left: 3em;
+    margin-right: 3em;
+    margin-left: 3em;
 }
 .quotationAuthor {
-        text-align: right;
+    text-align: right;
 }
 .rosterpix {
-        margin-right: 20px;
-        clear: right;
-        margin-left: 110px;
+    margin-right: 20px;
+    clear: right;
+    margin-left: 110px;
 }
 .smalltext{
-        font-size: .75em;
+    font-size: .75em;
 }
 .subhome_pix{
-        float: none;
-        clear: left;
+    float: none;
+    clear: left;
 }
 .subhome_title{
-        font-weight: bold;
+    font-weight: bold;
 }
 .subhome_text {
 }
 .subtitle {
-        font-size: smaller;
+    font-size: smaller;
 }
 .title {
-        font-style: italic;
+    font-style: italic;
 }
 .vernacular {
-        font-style: italic;
+    font-style: italic;
 }
 .warning  {
-        color: #FF0000;
+    color: #FF0000;
 }

@@ -17,5 +17,6 @@ urlpatterns = patterns('',
     url(r'^sooslwww/add_sign/$', 'sooslwww.views.add_sign'),
     url(r'^sooslwww/all_signs/$', 'sooslwww.views.all_signs'),
     url(r'^sooslwww/all_signs/filter/(?P<filter_string>(?:\d+,)*(?:\d+)?)$', 'sooslwww.views.all_signs_filter'),
+    url(r'sooslwww/(?P<url_string>.*)/select_language/(?P<language_id>\d+$)', 'sooslwww.views.select_language'),
     url(r'^admin/', include(admin.site.urls)),
 )

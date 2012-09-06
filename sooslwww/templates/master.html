@@ -9,7 +9,7 @@
 </head>
 <body>
 <div id="logo_bar">
-    <img src="{{ STATIC_URL }}images/left_column_logo.gif" alt="SIL International Home" width="144" height="144" hspace="0" vspace="0" border="0" align="left"/>
+    <img src="{{ STATIC_URL }}images/left_column_logo.gif" alt="SIL International Home" width="144" height="98" hspace="0" vspace="0" border="0" align="left"/>
 </div>
 <div id="top_banner"></div>
 <div id="nav_top">
@@ -18,13 +18,17 @@
 </div>
 
 </script>
+<h1 class="HomeHead">{% block title %} SooSL Web Version  {% endblock %}</h1>
+<div id="container">
+<div id="left">{% block left %}{% endblock %}</div>
 <div id="main">
-	<h2 class="HomeHead">{% block title %} SooSL Web Version  {% endblock %}</h2>
 
-	{% block content %}
+        {% block content %}
 
-	{% endblock %}
+        {% endblock %}
 
+</div>
+<div id="right">{% block right %}{% endblock %}</div>
 </div>
 </body>
 </html>
