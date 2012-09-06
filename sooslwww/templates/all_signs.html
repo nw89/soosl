@@ -4,9 +4,15 @@
 
 {% block customcss %}
 <link href="{{ STATIC_URL }}css/all_signs.css" rel="stylesheet" type="text/css">
+<link href="{{ STATIC_URL }}css/sign.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block content %}
+
+<div id="tag_grid_edit">
+{{ tag_text }}
+</div>
+
 <div id="signs_grid">
 {% for sign in all_signs %}
 <a href="{% url sooslwww.views.sign sign.id %}"><img class="sign_thumbnail" src="{% url sooslwww.views.thumbnail sign.id %}" alt="sign" /></a>

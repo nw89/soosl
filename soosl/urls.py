@@ -16,5 +16,6 @@ urlpatterns = patterns('',
         'sooslwww.views.video'),
     url(r'^sooslwww/add_sign/$', 'sooslwww.views.add_sign'),
     url(r'^sooslwww/all_signs/$', 'sooslwww.views.all_signs'),
+    url(r'^sooslwww/all_signs/filter/(?P<filter_string>(?:\d+,)*(?:\d+)?)$', 'sooslwww.views.all_signs_filter'),
     url(r'^admin/', include(admin.site.urls)),
 )

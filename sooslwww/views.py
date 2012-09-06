@@ -10,6 +10,8 @@ from sooslwww.models import Sign, Tag
 
 from sooslwww.TagRenderer import TagRenderer
 from sooslwww.videoHandler import VideoUploadHandler
+
+import string
 import utils
 
 def index(request):
@@ -84,10 +86,66 @@ def add_remove_tag(request, sign_id, tag_id, remove_tag):
 
 
 def all_signs(request):
-    all_signs = Sign.objects.all()
+    return all_signs_filter(request, '')
+
+def all_signs_filter(request, filter_string):
+    if filter_string != '':
+        #Extract tags
+        tag_strings = string.split(filter_string, ',')
+    else:
+        tag_strings = []
+
+    #Start will all signs and filter by each tag
+    filtered_signs = list(Sign.objects.all())
+
+    for tag_string in tag_strings:
+        for filtered_sign in filtered_signs:
+            has_tag = (filtered_sign.tags.filter(id__exact=tag_string)).exists()
+            if not has_tag:
+                filtered_signs.remove(filtered_sign)
+
+    #TODO: In production use a question query
+
+    #Render the tags
+    tagRenderer = TagRenderer()
+
+    #Load all relevant tags
+    # all_tags = Tag.objects.all()
+    all_tags = Tag.objects.filter(sign__in=filtered_signs).distinct().order_by('id')
+
+    for tag in all_tags:
+        tag_in_filter = (tag_strings.count(str(tag.id)) > 0)
+
+        if tag_in_filter:
+            tag_class = 'selected_edit_tag'
+            tags_string_without_tag = ''
+            for tag_string in tag_strings:
+                if tag_string != str(tag.id):
+                    tags_string_without_tag += tag_string + ','
+
+            # Remove last comma
+            new_filter_string = tags_string_without_tag[:-1]
+
+        else:
+            tag_class = 'edit_tag'
+            if filter_string == '':
+                new_filter_string = str(tag.id)
+            else:
+                new_filter_string = filter_string + ',' + str(tag.id)
+
+        tag_url  = reverse('sooslwww.views.all_signs_filter',
+                           kwargs={'filter_string': new_filter_string})
+
+
+
+        tagRenderer.AddTag(tag.id, tag.text, tag.graphic, tag_class, tag_url)
+
+    tagText = tagRenderer.Render(request)
+
     return render_to_response(
         'all_signs.html',
-        {'all_signs': all_signs},
+        {'all_signs': filtered_signs,
+         'tag_text': tagText},
         context_instance=RequestContext(request)
         )
 
