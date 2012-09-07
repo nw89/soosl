@@ -143,11 +143,17 @@ def all_signs_filter(request, filter_string):
     #Start will all signs and filter by each tag
     filtered_signs = list(Sign.objects.all())
 
+    matching_signs = list()
+
     for tag_string in tag_strings:
         for filtered_sign in filtered_signs:
             has_tag = (filtered_sign.tags.filter(id__exact=tag_string)).exists()
-            if not has_tag:
-                filtered_signs.remove(filtered_sign)
+            if has_tag:
+                matching_signs.append(filtered_sign)
+
+        filtered_signs = matching_signs
+        matching_signs = list()
+
 
     #TODO: In production use a question query
 
