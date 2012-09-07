@@ -71,8 +71,8 @@ class VideoUploadHandler():
     def generateMP4(self):
         createMP4Command = "ffmpeg -y -i %s -an -vcodec libx264 -f mp4 -s %sx%s %s" % (
             self._workingFileName,
-            getattr(settings, 'VIDEO'['width']),
-            getattr(settings, 'VIDEO'['height']),
+            getattr(settings, 'VIDEO')['width'],
+            getattr(settings, 'VIDEO')['height'],
             self.obtainFilePath("mp4"))
 
         statusoutput = commands.getstatusoutput(createMP4Command)

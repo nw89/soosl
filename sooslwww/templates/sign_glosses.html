@@ -1,7 +1,15 @@
-<table>
+<ul class="gloss_list">
+  {% if edit_mode %}<li class="gloss">(click to remove)</li>{% endif %}
   {% for gloss in glosses %}
-  <tr>
-    <td>{{gloss.text}}</td>
-  </tr>
+  <li class="gloss">
+    {% if edit_mode %}
+    <a class="gloss_edit" href="{% url sooslwww.views.remove_gloss sign.id gloss.id %}">
+      {% endif %}
+      {{gloss.text}}
+      {% if edit_mode %}
+    </a>
+    {% endif %}
+
+  </li>
   {% endfor %}
-</table>
+</ul>

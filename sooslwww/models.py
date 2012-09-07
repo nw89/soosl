@@ -4,14 +4,14 @@ from django.db import models
 
 class TagType(models.Model):
     def __unicode__(self):
-        return self.text
+	return self.text
 
     text = models.TextField(max_length = 128)
 
 
 class Tag(models.Model):
     def __unicode__(self):
-        return self.graphic.name
+	return self.graphic.name
 
     type = models.ForeignKey(TagType)
     text = models.TextField(max_length = 128)
@@ -19,13 +19,13 @@ class Tag(models.Model):
 
 class WrittenLanguage(models.Model):
     def __unicode__(self):
-        return self.name
+	return self.name
 
     name = models.TextField()
 
 class Dialect(models.Model):
     def __unicode____(self):
-        return self.name
+	return self.name
 
     language = models.ForeignKey(WrittenLanguage)
     name = models.TextField()
@@ -33,16 +33,16 @@ class Dialect(models.Model):
 
 class Gloss(models.Model):
     def __unicode__(self):
-        return self.text
+	return self.text
 
     language = models.ForeignKey(WrittenLanguage)
-    text = models.TextField()
+    text = models.TextField(max_length = 128)
 
     dialects = models.ManyToManyField(Dialect, blank=True, null=True)
 
 class Sign(models.Model):
     def __unicode__(self):
-        return self.videohash
+	return self.videohash
 
     videohash = models.CharField(max_length = 40)
     deleted = models.BooleanField(False)

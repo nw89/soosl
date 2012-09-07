@@ -2,7 +2,7 @@ from django.template import Library, RequestContext
 
 from sooslwww.models import WrittenLanguage
 
-from sooslwww.LanguageChooser import DefaultLanguageID
+from sooslwww.LanguageChooser import CurrentLanguageID
 
 register = Library()
 
@@ -11,7 +11,7 @@ def language_chooser(context):
     # TODO: browser based detection
     print context
     request = context['request']
-    selectedLanguageID = DefaultLanguageID(request)
+    selectedLanguageID = CurrentLanguageID(request)
 
     #Get all languages
     languages = WrittenLanguage.objects.all();

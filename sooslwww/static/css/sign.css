@@ -11,9 +11,9 @@ div#tag_grid, div#tag_grid_edit {
 
 div#tag_grid
 {
-    margin-left: auto;
     margin-right: auto;
     width: 102px;
+    text-align: center;
 
 }
 

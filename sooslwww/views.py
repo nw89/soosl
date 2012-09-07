@@ -1,14 +1,15 @@
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import resolve, reverse
 from django.forms.util import ErrorList
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import Context, loader, RequestContext
 
-from sooslwww.forms import AddSignForm
-from sooslwww.models import Sign, Tag, WrittenLanguage
+from sooslwww.forms import AddSignForm, AddGlossForm
+from sooslwww.models import Gloss, Sign, Tag, WrittenLanguage
+from sooslwww.utils import AddNewGloss
 
-from sooslwww.LanguageChooser import SetDefaultLanguage
+from sooslwww.LanguageChooser import SetCurrentLanguage, CurrentLanguageID
 from sooslwww.GlossRenderer import GlossRenderer
 from sooslwww.TagRenderer import TagRenderer
 from sooslwww.videoHandler import VideoUploadHandler
@@ -46,6 +47,21 @@ def sign(request, sign_id, edit=False):
 
             tagRenderer.AddTag(tag.id, tag.text, tag.graphic, tag_class, tag_url)
 
+        # Handle gloss form
+        if request.method == 'POST':
+            add_gloss_form = AddGlossForm(request.POST)
+            if add_gloss_form.is_valid():
+                AddNewGloss(requested_sign,
+                            CurrentLanguageID(request),
+                            add_gloss_form.cleaned_data['gloss_text'])
+
+                #Clear form
+                add_gloss_form = AddGlossForm()
+
+        else:
+            add_gloss_form = AddGlossForm()
+
+
     else:
         #Just sign tags
         sign_tags = requested_sign.tags.all()
@@ -58,15 +74,25 @@ def sign(request, sign_id, edit=False):
     print tagText
 
     glossRenderer = GlossRenderer()
-    glossText = glossRenderer.RenderSign(request, requested_sign)
+    glossText = glossRenderer.RenderSign(request, requested_sign, edit)
 
-    return render_to_response(
-        'sign.html',
-        {'sign': requested_sign,
-         'tag_text': tagText,
-         'gloss_text': glossText,
-         'edit_mode': edit},
-        context_instance=RequestContext(request))
+    if edit:
+        return render_to_response(
+            'sign.html',
+            {'sign': requested_sign,
+             'tag_text': tagText,
+             'gloss_text': glossText,
+             'edit_mode': True,
+             'add_gloss_form': add_gloss_form},
+            context_instance=RequestContext(request))
+    else:
+        return render_to_response(
+            'sign.html',
+            {'sign': requested_sign,
+             'tag_text': tagText,
+             'gloss_text': glossText,
+             'edit_mode': False},
+            context_instance=RequestContext(request))
 
 def edit_sign(request, sign_id):
     return sign(request, sign_id, True)
@@ -89,6 +115,19 @@ def add_remove_tag(request, sign_id, tag_id, remove_tag):
     return HttpResponseRedirect(
         reverse('sooslwww.views.edit_sign', args=(requested_sign.id,))
         )
+
+# def add_gloss(request, sign_id):
+#     if request.method
+
+def remove_gloss(request, sign_id, gloss_id):
+    gloss = get_object_or_404(Gloss, id=gloss_id)
+    sign = get_object_or_404(Sign, id=sign_id)
+
+    sign.glosses.remove(gloss)
+    return HttpResponseRedirect(
+        reverse('sooslwww.views.edit_sign', args=(sign.id,))
+        )
+
 
 
 def all_signs(request):
@@ -193,14 +232,12 @@ def add_sign(request):
         context_instance=RequestContext(request)
         )
 
-def select_language(request, url_string, language_id):
+def select_language(request, language_id):
     if not WrittenLanguage.objects.filter(id=language_id).exists():
         raise Http404
 
-    SetDefaultLanguage(request, language_id)
-    return HttpResponseRedirect(
-        '/sooslwww/' + url_string
-        )
+    SetCurrentLanguage(request, language_id)
+    return HttpResponseRedirect(request.path[0:-18])
 
 
 def thumbnail(request, sign_id):

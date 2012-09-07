@@ -101,13 +101,13 @@ min-width: 716px;
 
 #left, #main, #right
 {
-    padding-left: 30px;
+    padding-left: 20px;
     display: inline-block;
     vertical-align: top;
 }
 
 #left {
-    width: 104px;
+    width: 124px;
     float: left;
     margin-bottom: 100%;
 }
@@ -122,6 +122,38 @@ min-width: 716px;
     width: 194px;
 }
 
+div#glosses {
+    width: 110px;
+    margin-left: auto;
+    margin-right: 0px;
+    border: 1px #999 solid;
+    padding: 5px;
+    text-align: center;
+    font-size: small;
+}
+
+
+form#language_selector_form {
+    text-align:center;
+    margin: 0px 0px;
+}
+
+select#language_selector {
+
+}
+
+ul.gloss_list
+{
+    list-style-type: none;
+    padding: 10px 2px;
+    margin: 0px;
+    word-wrap: break-word;
+}
+
+li.gloss
+{
+    margin-bottom: 5px;
+}
 
 #abstract {
     margin-right: 30px;
@@ -167,6 +199,14 @@ th {
 
 h1, h2, h3, h4, h5 {
     color: #999999;
+}
+
+h2 {
+   font-size: 16pt;
+}
+
+h2.block_label {
+    margin: 0px 0px 5px 0px;
 }
 
 .bullets_by_pix { /*Lists appearing to the right of a pix lose their bullets, use as <ul class="bullets_by_pix"> */

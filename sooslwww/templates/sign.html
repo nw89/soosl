@@ -17,12 +17,12 @@
     <script type="text/javascript" src="{{ STATIC_URL }}minplayer/templates/default/js/minplayer.default.js"></script>
     <script type="text/javascript">
       $(function() {
-        $("#h264").minplayer({
-          width: '512px',
-          height: '443px',
-          loop: true,
-           autoplay: true
-        });
+	$("#h264").minplayer({
+	  width: '512px',
+	  height: '443px',
+	  loop: true,
+	   autoplay: true
+	});
       });
     </script>
     <!-- <link rel="stylesheet" type="text/css" media="screen" href="{{ STATIC_URL }}minplayer/stylesheets/stylesheet.css"> -->
@@ -36,9 +36,25 @@
 {% endblock %}
 
 {% block left %}
-{% load language_chooser %}
-{% language_chooser %}
-{{ gloss_text }}
+<div id="glosses">
+  <h2 class=block_label>Glosses</h2>
+  {% load language_chooser %}
+  {% language_chooser %}
+  {{ gloss_text }}
+
+  {% if edit_mode %}
+  <form action="{%url sooslwww.views.edit_sign sign.id %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ add_gloss_form.non_field_errors }}
+  {{ add_gloss_form.gloss_text.errors }}
+  {{ add_gloss_form.gloss_text }}
+  <input type="submit" value="Add" />
+</form>
+  <a id="tags_link" href="{% url sooslwww.views.sign sign.id %}">Finished</a>
+  {% else %}
+  <a id="tags_link" href="{% url sooslwww.views.edit_sign sign.id %}">Edit</a>
+  {% endif %}
+</div>
 {% endblock %}
 
 {% block content %}
@@ -49,6 +65,7 @@
 
 {% block right %}
 <div id="tag_grid{% if edit_mode %}_edit{% endif %}">
+  <h2 class=block_label>Tags</h2>
   {{ tag_text }}
   {% if edit_mode %}
   <a id="tags_link" href="{% url sooslwww.views.sign sign.id %}">Finished</a>
