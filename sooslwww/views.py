@@ -11,10 +11,10 @@ from sooslwww.utils import AddNewGloss
 
 from sooslwww.LanguageChooser import SetCurrentLanguage, CurrentLanguageID
 from sooslwww.GlossRenderer import GlossRenderer
-from sooslwww.TagRenderer import TagRenderer
-from sooslwww.UrlBasedSignFilter import UrlBasedSignFilter
 from sooslwww.videoHandler import VideoUploadHandler
+from sooslwww.TagRenderer import TagRenderer
 
+from sooslwww.controllers.AllSignsFilterController import AllSignsFilterController
 
 import string
 import utils
@@ -135,32 +135,10 @@ def all_signs(request):
     return all_signs_filter(request, '')
 
 def all_signs_filter(request, filter_string):
-    url_filter =  UrlBasedSignFilter(filter_string)
+    controller = AllSignsFilterController(filter_string)
 
-    filtered_signs = url_filter.ObtainFilteredSigns()
-
-    tagRenderer = TagRenderer()
-
-    #Load all relevant tags
-    all_tags = Tag.objects.filter(sign__in=filtered_signs).distinct().order_by('id')
-
-    for tag in all_tags:
-        if url_filter.TagInFilter(tag):
-            tag_class = 'selected_edit_tag'
-
-        else:
-            tag_class = 'edit_tag'
-
-        new_filter_string = url_filter.ObtainTagFilterString(tag)
-
-        tag_url  = reverse('sooslwww.views.all_signs_filter',
-                           kwargs={'filter_string': new_filter_string})
-
-
-
-        tagRenderer.AddTag(tag.id, tag.text, tag.graphic, tag_class, tag_url)
-
-    tagText = tagRenderer.Render(request)
+    filtered_signs = controller.GetFilteredSigns();
+    tagText = controller.GetTagText(request);
 
     return render_to_response(
         'all_signs.html',
