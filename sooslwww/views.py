@@ -12,6 +12,7 @@ from sooslwww.utils import AddNewGloss
 from sooslwww.LanguageChooser import SetCurrentLanguage, CurrentLanguageID
 from sooslwww.GlossRenderer import GlossRenderer
 from sooslwww.TagRenderer import TagRenderer
+from sooslwww.UrlBasedSignFilter import UrlBasedSignFilter
 from sooslwww.videoHandler import VideoUploadHandler
 
 
@@ -134,55 +135,23 @@ def all_signs(request):
     return all_signs_filter(request, '')
 
 def all_signs_filter(request, filter_string):
-    if filter_string != '':
-        #Extract tags
-        tag_strings = string.split(filter_string, ',')
-    else:
-        tag_strings = []
+    url_filter =  UrlBasedSignFilter(filter_string)
 
-    #Start will all signs and filter by each tag
-    filtered_signs = list(Sign.objects.all())
+    filtered_signs = url_filter.ObtainFilteredSigns()
 
-    matching_signs = list()
-
-    for tag_string in tag_strings:
-        for filtered_sign in filtered_signs:
-            has_tag = (filtered_sign.tags.filter(id__exact=tag_string)).exists()
-            if has_tag:
-                matching_signs.append(filtered_sign)
-
-        filtered_signs = matching_signs
-        matching_signs = list()
-
-
-    #TODO: In production use a question query
-
-    #Render the tags
     tagRenderer = TagRenderer()
 
     #Load all relevant tags
-    # all_tags = Tag.objects.all()
     all_tags = Tag.objects.filter(sign__in=filtered_signs).distinct().order_by('id')
 
     for tag in all_tags:
-        tag_in_filter = (tag_strings.count(str(tag.id)) > 0)
-
-        if tag_in_filter:
+        if url_filter.TagInFilter(tag):
             tag_class = 'selected_edit_tag'
-            tags_string_without_tag = ''
-            for tag_string in tag_strings:
-                if tag_string != str(tag.id):
-                    tags_string_without_tag += tag_string + ','
-
-            # Remove last comma
-            new_filter_string = tags_string_without_tag[:-1]
 
         else:
             tag_class = 'edit_tag'
-            if filter_string == '':
-                new_filter_string = str(tag.id)
-            else:
-                new_filter_string = filter_string + ',' + str(tag.id)
+
+        new_filter_string = url_filter.ObtainTagFilterString(tag)
 
         tag_url  = reverse('sooslwww.views.all_signs_filter',
                            kwargs={'filter_string': new_filter_string})
