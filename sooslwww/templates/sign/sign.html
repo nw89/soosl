@@ -1,0 +1,37 @@
+{% extends "master.html" %}
+
+{% block scripts %}
+  {% include "sign/video_player_head.html" %}
+{% endblock %}
+
+{% block title %}View Sign{% endblock %}
+
+{% block customcss %}
+<link href="{{ STATIC_URL }}css/sign.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block left %}
+<div id="glosses">
+  <h2 class=block_label>Glosses</h2>
+  {% load language_chooser %}
+  {% language_chooser %}
+  {{ gloss_text }}
+  {% block below_glosses %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="{% block video_div_id %}{% endblock %}">
+<video id="h264" src="{% url sooslwww.views.video sign.id %}"></video>
+</div>
+{% endblock %}
+
+{% block right %}
+<div id="{% block tags_div_id %}{% endblock %}">
+  <h2 class=block_label>Tags</h2>
+  {{ tag_text }}
+
+  {% block below_tags %}{% endblock %}
+</div>
+
+{% endblock %}

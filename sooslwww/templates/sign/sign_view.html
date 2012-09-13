@@ -1,0 +1,13 @@
+{% extends "sign/sign.html" %}
+
+{% block below_glosses %}
+  <a id="tags_link" href="{% url sooslwww.views.edit_sign sign.id %}">Edit</a>
+{% endblock %}
+
+{% block viedo_div_id %}video{% endblock %}
+
+{% block tags_div_id %}tag_grid{% endblock %}
+
+{% block below_tags %}
+  <a id="tags_link" href="{% url sooslwww.views.edit_sign sign.id %}">Edit</a>
+{% endblock %}

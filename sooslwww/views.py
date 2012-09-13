@@ -5,16 +5,17 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import Context, loader, RequestContext
 
-from sooslwww.forms import AddSignForm, AddGlossForm
+from sooslwww.forms import AddSignForm
 from sooslwww.models import Gloss, Sign, Tag, WrittenLanguage
 from sooslwww.utils import AddNewGloss
 
 from sooslwww.LanguageChooser import SetCurrentLanguage, CurrentLanguageID
 from sooslwww.GlossRenderer import GlossRenderer
-from sooslwww.videoHandler import VideoUploadHandler
 from sooslwww.TagRenderer import TagRenderer
+from sooslwww.videoHandler import VideoUploadHandler
 
 from sooslwww.controllers.AllSignsFilterController import AllSignsFilterController
+from sooslwww.controllers.SignController import SignControllerView, SignControllerEdit
 
 import string
 import utils
@@ -23,77 +24,12 @@ def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
 
 def sign(request, sign_id, edit=False):
-    requested_sign = get_object_or_404(Sign, id=sign_id);
-
-    tagRenderer = TagRenderer()
-
-
     if edit:
-	#Load all tags
-	all_tags = Tag.objects.all()
-
-	for tag in all_tags:
-	    signs_matching_tag = requested_sign.tags.filter(id=tag.id);
-	    selected = signs_matching_tag.exists()
-
-	    if selected:
-		tag_url = reverse('sooslwww.views.remove_tag',
-				  args=(requested_sign.id,
-					tag.id))
-	    else:
-		tag_url = reverse('sooslwww.views.add_tag',
-				  args=(requested_sign.id,
-					tag.id))
-
-	    tagRenderer.AddTag(tag, selected, tag_url)
-
-
-	# Handle gloss form
-	if request.method == 'POST':
-	    add_gloss_form = AddGlossForm(request.POST)
-	    if add_gloss_form.is_valid():
-		AddNewGloss(requested_sign,
-			    CurrentLanguageID(request),
-			    add_gloss_form.cleaned_data['gloss_text'])
-
-		#Clear form
-		add_gloss_form = AddGlossForm()
-
-	else:
-	    add_gloss_form = AddGlossForm()
-
-
+	controller = SignControllerEdit(sign_id)
     else:
-	#Just sign tags
-	sign_tags = requested_sign.tags.all()
+	controller = SignControllerView(sign_id)
 
-	for tag in sign_tags:
-	    tagRenderer.AddTag(tag, False, '')
-
-    tagText = tagRenderer.Render(request)
-
-    print tagText
-
-    glossRenderer = GlossRenderer()
-    glossText = glossRenderer.RenderSign(request, requested_sign, edit)
-
-    if edit:
-	return render_to_response(
-	    'sign.html',
-	    {'sign': requested_sign,
-	     'tag_text': tagText,
-	     'gloss_text': glossText,
-	     'edit_mode': True,
-	     'add_gloss_form': add_gloss_form},
-	    context_instance=RequestContext(request))
-    else:
-	return render_to_response(
-	    'sign.html',
-	    {'sign': requested_sign,
-	     'tag_text': tagText,
-	     'gloss_text': glossText,
-	     'edit_mode': False},
-	    context_instance=RequestContext(request))
+    return controller.Render(request, edit)
 
 def edit_sign(request, sign_id):
     return sign(request, sign_id, True)

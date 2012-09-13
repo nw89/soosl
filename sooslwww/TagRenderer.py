@@ -2,7 +2,8 @@ from django.template import RequestContext, loader
 
 class RenderedTag():
     def __init__(self, tag, selected, tag_url):
-	self.tag = tag
+	self.text = tag.text
+	self.graphic = tag.graphic
 	self.selected = selected
 	self.tag_url = tag_url
 

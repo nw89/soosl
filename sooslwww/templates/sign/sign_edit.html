@@ -1,0 +1,20 @@
+{% extends "sign/sign.html" %}
+
+{% block below_glosses %}
+  <form action="{%url sooslwww.views.edit_sign sign.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ add_gloss_form.non_field_errors }}
+    {{ add_gloss_form.gloss_text.errors }}
+    {{ add_gloss_form.gloss_text }}
+    <input type="submit" value="Add" />
+  </form>
+  <a id="tags_link" href="{% url sooslwww.views.sign sign.id %}">Finished</a>
+{% endblock %}
+
+{% block viedo_div_id %}video_edit{% endblock %}
+
+{% block tags_div_id %}tag_grid_edit{% endblock %}
+
+{% block below_tags %}
+  <a id="tags_link" href="{% url sooslwww.views.sign sign.id %}">Finished</a>
+{% endblock %}
