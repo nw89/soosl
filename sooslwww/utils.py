@@ -2,6 +2,14 @@ from django.http import HttpResponse
 
 from sooslwww.models import Gloss
 
+def StripLastComma(string):
+    if string == '':
+        return string
+    if string[-1] == ',':
+        return string[:-1]
+    else:
+        return string
+
 def generateFileHttpResponse(filePath, mimeType):
     file = open(filePath, 'rb');
 

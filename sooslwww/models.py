@@ -49,3 +49,6 @@ class Sign(models.Model):
 
     tags = models.ManyToManyField(Tag, blank=True, null=True);
     glosses = models.ManyToManyField(Gloss, blank=True, null=True)
+
+    def HasTag(self, tag_id):
+	return (self.tags.filter(id__exact=tag_id).exists())
