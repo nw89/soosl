@@ -1,7 +1,7 @@
 import string
 
 from sooslwww.models import Sign, Tag
-import utils
+from sooslwww import utils
 
 class UrlBasedSignFilter:
     def __init__(self, filter_string):

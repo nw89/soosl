@@ -2,7 +2,7 @@ from django.core.urlresolvers import reverse
 
 from sooslwww.models import Tag
 
-from sooslwww.UrlBasedSignFilter import UrlBasedSignFilter
+from sooslwww.filter.UrlBasedSignFilter import UrlBasedSignFilter
 
 class AllSignsFilterController:
     def __init__(self, filter_string):
