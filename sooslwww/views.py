@@ -1,16 +1,14 @@
 from django.conf import settings
-from django.core.urlresolvers import resolve, reverse
+from django.core.urlresolvers import reverse
 from django.forms.util import ErrorList
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, render_to_response, get_object_or_404
-from django.template import Context, loader, RequestContext
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template import Context, RequestContext
 
 from sooslwww.forms import AddSignForm
 from sooslwww.models import Gloss, Sign, Tag, WrittenLanguage
-from sooslwww.utils import AddNewGloss
 
-from sooslwww.LanguageChooser import SetCurrentLanguage, CurrentLanguageID
-from sooslwww.renderers import GlossRenderer, TagRenderer
+from sooslwww.LanguageChooser import SetCurrentLanguage
 from sooslwww.videoHandler import VideoUploadHandler
 
 from sooslwww.controllers.AllSignsFilterController import AllSignsFilterController
@@ -68,25 +66,12 @@ def all_signs(request):
 def all_signs_filter_tag(request, tag_string):
     return all_signs_filter(request, tag_string, '')
 
-def all_signs_filter_gloss(request, tag_string):
-    return all_signs_filter(request, tag_string, '')
+def all_signs_filter_gloss(request, gloss_string):
+    return all_signs_filter(request, '', gloss_string)
 
 def all_signs_filter(request, tag_string, gloss_string):
     controller = AllSignsFilterController(tag_string, gloss_string)
-
-    filtered_signs = controller.GetFilteredSigns();
-
-    tag_renderer = TagRenderer()
-    controller.AddTags(tag_renderer)
-
-    tag_text = tag_renderer.Render(request)
-
-    return render_to_response(
-        'all_signs.html',
-        {'all_signs': filtered_signs,
-         'tag_text': tag_text},
-        context_instance=RequestContext(request)
-        )
+    return controller.Render(request)
 
 def add_sign(request):
     if request.method == 'POST':

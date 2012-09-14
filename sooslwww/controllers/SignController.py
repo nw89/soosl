@@ -15,12 +15,11 @@ class SignController(object):
     def __init__(self, sign_id):
         self._requested_sign = get_object_or_404(Sign, id=sign_id);
         self._tag_renderer = TagRenderer()
-        self._gloss_renderer = GlossRenderer()
 
     def Render(self, request, edit):
         self._PreprocessRequest(request)
 
-        glossText = self._gloss_renderer.RenderSign(request, self._requested_sign, self.EditMode())
+        glossText = self._GetGlossText(request)
 
         return render_to_response(
             self.TemplateFile(),
@@ -32,11 +31,33 @@ class SignController(object):
                 self._GetExtraComponents().items()),
             context_instance=RequestContext(request))
 
+    def _GetGlossText(self, request):
+        glosses = self._requested_sign.glosses.filter(
+            language__id=CurrentLanguageID(request))
+
+        gloss_renderer = GlossRenderer()
+        for gloss in glosses:
+            gloss_url = reverse(
+                'sooslwww.views.remove_gloss',
+                args=(self._requested_sign.id,
+                      gloss.id))
+
+            gloss_renderer.AddGloss(gloss, gloss_url, False)
+
+        return gloss_renderer.Render(
+            request,
+            self._GlossTemplateFile())
+
     def _GetExtraComponents(self):
         return {}
 
     def _PreprocessRequest(self, request):
         pass
+
+    def _GlossTemplateFile(self):
+        return 'gloss_list.html'
+
+
 
 class SignControllerEdit(SignController):
     def __init__(self, sign_id):
@@ -44,6 +65,9 @@ class SignControllerEdit(SignController):
 
     def TemplateFile(self):
         return 'sign/sign_edit.html'
+
+    def _GlossTemplateFile(self):
+        return 'sign/sign_glosses_edit.html'
 
     def EditMode(self):
         return True

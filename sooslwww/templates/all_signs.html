@@ -7,6 +7,14 @@
 <link href="{{ STATIC_URL }}css/sign.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
+{% block left %}
+<div id="glosses">
+  <h2 class=block_label>Glosses</h2>
+  {% load language_chooser %}
+  {% language_chooser %}
+  {{ gloss_text }}
+{% endblock %}
+
 {% block content %}
 
 <div id="tag_grid_edit">

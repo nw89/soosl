@@ -1,0 +1,11 @@
+<ul class="gloss_list">
+  {% block gloss_top %}{% endblock %}
+
+  {% for gloss in glosses %}
+  <li class="gloss">
+    <a class="{% block url_class %}gloss_url{% endblock %}" href="{{ gloss.url }}">
+      {{gloss.text}}
+    </a>
+  </li>
+  {% endfor %}
+</ul>

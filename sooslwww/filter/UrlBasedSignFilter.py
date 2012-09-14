@@ -9,102 +9,102 @@ class InvalidTagException(Exception):
 
 def ExtractTags(filter_string):
     if filter_string == '':
-	tag_strings = []
+        tag_strings = []
     else:
-	tag_strings = string.split(filter_string, ',')
+        tag_strings = string.split(filter_string, ',')
     return tag_strings
 
 def CreateCommaSeparatedString(string_list):
     filter_string = ''
 
     for s in string_list:
-	filter_string += s + ','
+        filter_string += s + ','
 
     return(utils.StripLastComma(filter_string))
 
 
 class StringList:
     def __init__(self, string_list):
-	self._string_list = string_list
+        self._string_list = string_list
 
     def Strings(self):
-	return self._string_list
+        return self._string_list
 
     def InList(self, string):
-	return (self._string_list.count(string) > 0)
+        return (self._string_list.count(string) > 0)
 
     def CommaSeparatedString(self):
-	return (CreateCommaSeparatedString
-		(self._string_list))
+        return (CreateCommaSeparatedString
+                (self._string_list))
 
     def CreateCSStringExcluding(self, string):
-	string_list_copy = list(self._string_list)
-	string_list_copy.remove(string)
-	return(CreateCommaSeparatedString
-	       (string_list_copy))
+        string_list_copy = list(self._string_list)
+        string_list_copy.remove(string)
+        return(CreateCommaSeparatedString
+               (string_list_copy))
 
     def CreateCSStringIncluding(self, string):
-	string_list_copy = list(self._string_list)
-	string_list_copy.append(string)
-	return(CreateCommaSeparatedString
-	       (string_list_copy))
+        string_list_copy = list(self._string_list)
+        string_list_copy.append(string)
+        return(CreateCommaSeparatedString
+               (string_list_copy))
 
 
 class UrlBasedSignFilter:
     def __init__(self, tag_string, gloss_string):
-	self._tag_strings = StringList(ExtractTags(tag_string))
-	self._gloss_strings = StringList(ExtractTags(gloss_string))
+        self._tag_strings = StringList(ExtractTags(tag_string))
+        self._gloss_strings = StringList(ExtractTags(gloss_string))
 
-	self._multi_filter = MultiFilter()
+        self._multi_filter = MultiFilter()
+
+        # TODO: In production use a query
+        self._AddFilters(self._tag_strings, Tag)
+        self._AddFilters(self._gloss_strings, Gloss)
+
+        # Start with all signs
+        self._filtered_signs = self._multi_filter.FilterSigns(
+            list(Sign.objects.all()))
+
 
 
     def ObtainFilteredSigns(self):
-	# TODO: In production use a query
-
-	self._AddFilters(self._tag_strings, Tag)
-	self._AddFilters(self._gloss_strings, Gloss)
-
-	# Start with all signs
-	filtered_signs = self._multi_filter.FilterSigns(
-	    list(Sign.objects.all()))
-
-	return filtered_signs
+        return self._filtered_signs
 
     def TagInFilter(self, tag):
-	return self._tag_strings.InList(str(tag.id))
+        return self._tag_strings.InList(str(tag.id))
 
     def GlossInFilter(self, gloss):
-	return self._gloss_strings.InList(str(gloss.id))
+        return self._gloss_strings.InList(str(gloss.id))
 
     def ObtainTagFilterString(self, tag):
-	if self.TagInFilter(tag):
-	    tag_string = self._tag_strings.\
-		CreateCSStringExcluding(str(tag.id))
-	else:
-	    tag_string = self._tag_strings.\
-		CreateCSStringIncluding(str(tag.id))
+        if self.TagInFilter(tag):
+            tag_string = self._tag_strings.\
+                CreateCSStringExcluding(str(tag.id))
+        else:
+            tag_string = self._tag_strings.\
+                CreateCSStringIncluding(str(tag.id))
 
-	return tag_string
+        return tag_string
 
     def ObtainAllTagsString(self):
-	return (self._tag_strings.CommaSeparatedString())
+        return (self._tag_strings.CommaSeparatedString())
 
     def ObtainGlossFilterString(self, gloss):
-	if self.GlossInFilter(gloss):
-	    gloss_string = self._gloss_strings.\
-		CreateCSStringExcluding(string(gloss.id))
-	else:
-	    gloss_string = self._gloss_strings.\
-		CreateCSStringIncluding(string(gloss.id))
+        if self.GlossInFilter(gloss):
+            gloss_string = self._gloss_strings.\
+                CreateCSStringExcluding(str(gloss.id))
+        else:
+            gloss_string = self._gloss_strings.\
+                CreateCSStringIncluding(str(gloss.id))
 
-	return gloss_string
+        return gloss_string
 
     def ObtainAllGlossesString(self):
-	return (self._gloss_strings.CommaSeparatedString())
+        return (self._gloss_strings.CommaSeparatedString())
 
 
 
     def _AddFilters(self, string_list, type):
-	for string in string_list.Strings():
-	    attribute = type.objects.get(id=int(string))
-	    self._multi_filter.AddFilter(attribute)
+        for string in string_list.Strings():
+            attribute = type.objects.get(id=int(string))
+            self._multi_filter.AddFilter(attribute)

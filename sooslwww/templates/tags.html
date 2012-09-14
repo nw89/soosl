@@ -1,3 +1,3 @@
 {% for tag in tags %}
-  <a href="{{ tag.tag_url}}"><img class="{% if tag.selected %} selected_edit_tag {% else %}edit_tag{% endif %}" src="{{ STATIC_URL }}{{ tag.graphic }}" alt="{{ tag.text }}" /></a>
+  <a href="{{ tag.url}}"><img class="{% if tag.selected %} selected_edit_tag {% else %}edit_tag{% endif %}" src="{{ STATIC_URL }}{{ tag.graphic }}" alt="{{ tag.text }}" /></a>
 {% endfor %}

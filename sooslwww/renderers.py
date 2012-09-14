@@ -4,38 +4,51 @@ from sooslwww.models import WrittenLanguage, Gloss
 
 from sooslwww.LanguageChooser import CurrentLanguageID
 
-class GlossRenderer:
-    def RenderSign(self, request, sign, edit_mode=False):
-        glosses = sign.glosses.filter(
-            language__id=CurrentLanguageID(request))
-
-        return loader.render_to_string(
-            'sign_glosses.html',
-            {'glosses': glosses,
-             'sign': sign,
-             'edit_mode': edit_mode
-             },
-            context_instance=RequestContext(request))
-
-
-class RenderedTag():
-    def __init__(self, tag, selected, tag_url):
-        self.text = tag.text
-        self.graphic = tag.graphic
+class RenderedAttribute(object):
+    def __init__(self, text, url, selected):
+        self.text = text
         self.selected = selected
-        self.tag_url = tag_url
+        self.url = url
 
-class TagRenderer:
+class Renderer(object):
     def __init__(self):
         self._tags = []
 
+    def _AddTag(self, tag):
+        self._tags.append(tag)
+
+    def _RenderTemplate(self, request, template, attribute_name):
+           return loader.render_to_string(
+             template,
+             {attribute_name: self._tags},
+             context_instance=RequestContext(request))
+
+    def Render(self, request):
+        raise NotImplementedError
+
+
+class RenderedTag(RenderedAttribute):
+    def __init__(self, tag, url, selected):
+        RenderedAttribute.__init__(self, tag.text, url, selected)
+        self.graphic = tag.graphic
+        assert(self.text == tag.text)
+
+class TagRenderer(Renderer):
     def AddTag(self, tag, selected, tag_url):
-        self._tags.append(
-            RenderedTag(tag, selected, tag_url)
+        self._AddTag(
+            RenderedTag(tag, tag_url, selected)
             )
 
     def Render(self, request):
-        return loader.render_to_string(
-            'tags.html',
-            {'tags': self._tags},
-            context_instance=RequestContext(request))
+        return self._RenderTemplate(request, 'tags.html', 'tags')
+
+class GlossRenderer(Renderer):
+    def AddGloss(self, gloss, selected, url):
+        self._AddTag(
+            RenderedAttribute(gloss.text, url, selected))
+
+    def Render(self, request, template):
+        return self._RenderTemplate(
+            request,
+            template,
+            'glosses')
