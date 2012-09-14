@@ -1,3 +1,5 @@
+import string
+
 from django.db import models
 
 # Create your models here.
@@ -50,5 +52,23 @@ class Sign(models.Model):
     tags = models.ManyToManyField(Tag, blank=True, null=True);
     glosses = models.ManyToManyField(Gloss, blank=True, null=True)
 
-    def HasTag(self, tag_id):
-	return (self.tags.filter(id__exact=tag_id).exists())
+    def HasTag(self, tag):
+	if type(tag) == unicode:
+	    return (self.tags.filter(id__exact=int(tag)).exists())
+	elif type(tag) == int:
+	    return (self.tags.filter(id__exact=tag).exists())
+
+	elif type(tag) == Tag:
+	    return (self.tags.filter(id__exact=tag.id).exists())
+	else:
+	    raise NotImplementedError()
+
+    def HasGloass(self, gloss):
+	if type(gloss) == unicode:
+	    return (self.glosses.filter(id__exact=int(gloss)).exists())
+	if type(gloss) == int:
+	    return (self.glosses.filter(id__exact=gloss).exists())
+	elif type(gloss) == Gloss:
+	    return (self.glosses.filter(id__exact=gloss.id).exists())
+	else:
+	    raise NotImplementedError()

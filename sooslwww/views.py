@@ -68,10 +68,16 @@ def remove_gloss(request, sign_id, gloss_id):
 
 
 def all_signs(request):
-    return all_signs_filter(request, '')
+    return all_signs_filter(request, '', '')
 
-def all_signs_filter(request, filter_string):
-    controller = AllSignsFilterController(filter_string)
+def all_signs_filter_tag(request, tag_string):
+    return all_signs_filter(request, tag_string, '')
+
+def all_signs_filter_gloss(request, tag_string):
+    return all_signs_filter(request, tag_string, '')
+
+def all_signs_filter(request, tag_string, gloss_string):
+    controller = AllSignsFilterController(tag_string, gloss_string)
 
     filtered_signs = controller.GetFilteredSigns();
 

@@ -1,57 +1,110 @@
 import string
 
-from sooslwww.models import Sign, Tag
+from sooslwww.filter.filters import MultiFilter
+from sooslwww.models import Gloss, Sign, Tag
 from sooslwww import utils
 
+class InvalidTagException(Exception):
+    pass
+
+def ExtractTags(filter_string):
+    if filter_string == '':
+	tag_strings = []
+    else:
+	tag_strings = string.split(filter_string, ',')
+    return tag_strings
+
+def CreateCommaSeparatedString(string_list):
+    filter_string = ''
+
+    for s in string_list:
+	filter_string += s + ','
+
+    return(utils.StripLastComma(filter_string))
+
+
+class StringList:
+    def __init__(self, string_list):
+	self._string_list = string_list
+
+    def Strings(self):
+	return self._string_list
+
+    def InList(self, string):
+	return (self._string_list.count(string) > 0)
+
+    def CommaSeparatedString(self):
+	return (CreateCommaSeparatedString
+		(self._string_list))
+
+    def CreateCSStringExcluding(self, string):
+	string_list_copy = list(self._string_list)
+	string_list_copy.remove(string)
+	return(CreateCommaSeparatedString
+	       (string_list_copy))
+
+    def CreateCSStringIncluding(self, string):
+	string_list_copy = list(self._string_list)
+	string_list_copy.append(string)
+	return(CreateCommaSeparatedString
+	       (string_list_copy))
+
+
 class UrlBasedSignFilter:
-    def __init__(self, filter_string):
-	self.tag_strings = self._ExtractTags(filter_string)
+    def __init__(self, tag_string, gloss_string):
+	self._tag_strings = StringList(ExtractTags(tag_string))
+	self._gloss_strings = StringList(ExtractTags(gloss_string))
+
+	self._multi_filter = MultiFilter()
+
 
     def ObtainFilteredSigns(self):
 	# TODO: In production use a query
 
-	# Start with all signs
-	filtered_signs = list(Sign.objects.all())
+	self._AddFilters(self._tag_strings, Tag)
+	self._AddFilters(self._gloss_strings, Gloss)
 
-	# Remove based on every tag
-	for tag_string in self.tag_strings:
-	    filtered_signs = [sign for sign in filtered_signs \
-				  if sign.HasTag(tag_string)]
+	# Start with all signs
+	filtered_signs = self._multi_filter.FilterSigns(
+	    list(Sign.objects.all()))
 
 	return filtered_signs
 
     def TagInFilter(self, tag):
-	return (self.tag_strings.count(str(tag.id)) > 0)
+	return self._tag_strings.InList(str(tag.id))
+
+    def GlossInFilter(self, gloss):
+	return self._gloss_strings.InList(str(gloss.id))
 
     def ObtainTagFilterString(self, tag):
-	#Copy the tag_strings
-	tag_strings_copy = list(self.tag_strings)
-
-	tag_string = str(tag.id)
-
 	if self.TagInFilter(tag):
-	    # Remove it from the tag strings
-	    tag_strings_copy.remove(tag_string)
+	    tag_string = self._tag_strings.\
+		CreateCSStringExcluding(str(tag.id))
 	else:
-	    # Append it to the tag strings
-	    tag_strings_copy.append(tag_string)
+	    tag_string = self._tag_strings.\
+		CreateCSStringIncluding(str(tag.id))
 
-	new_filter_string = self._GenerateNewTagFilterString(
-	    tag_strings_copy)
+	return tag_string
 
-	return new_filter_string
+    def ObtainAllTagsString(self):
+	return (self._tag_strings.CommaSeparatedString())
 
-    def _ExtractTags(self, filter_string):
-	if filter_string == '':
-	    tag_strings = []
+    def ObtainGlossFilterString(self, gloss):
+	if self.GlossInFilter(gloss):
+	    gloss_string = self._gloss_strings.\
+		CreateCSStringExcluding(string(gloss.id))
 	else:
-	    tag_strings = string.split(filter_string, ',')
-	return tag_strings
+	    gloss_string = self._gloss_strings.\
+		CreateCSStringIncluding(string(gloss.id))
 
-    def _GenerateNewTagFilterString(self,tag_strings):
-	new_tag_filter_string = ''
+	return gloss_string
 
-	for tag_string in tag_strings:
-	    new_tag_filter_string += tag_string + ','
+    def ObtainAllGlossesString(self):
+	return (self._gloss_strings.CommaSeparatedString())
 
-	return (utils.StripLastComma(new_tag_filter_string))
+
+
+    def _AddFilters(self, string_list, type):
+	for string in string_list.Strings():
+	    attribute = type.objects.get(id=int(string))
+	    self._multi_filter.AddFilter(attribute)
