@@ -129,7 +129,6 @@ div#glosses {
     border: 1px #999 solid;
     padding: 5px;
     text-align: center;
-    font-size: small;
 }
 
 
@@ -148,11 +147,31 @@ ul.gloss_list
     padding: 10px 2px;
     margin: 0px;
     word-wrap: break-word;
+    text-align:left;
+    font-size: 12pt;
 }
 
 li.gloss
 {
-    margin-bottom: 5px;
+    margin-bottom: 3px;
+    min-height: 15pt;
+}
+
+div#tag_grid, div#tag_grid_top {
+    border: 1px #999 solid;
+}
+
+div#tag_grid
+{
+    margin-right: auto;
+    width: 102px;
+    text-align: center;
+
+}
+
+div#tag_grid_top
+{
+     width: 512px;
 }
 
 #abstract {

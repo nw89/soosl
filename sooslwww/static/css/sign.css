@@ -5,23 +5,6 @@ a#tags_link {
     margin: 5px;
 }
 
-div#tag_grid, div#tag_grid_edit {
-    border: 1px #999 solid;
-}
-
-div#tag_grid
-{
-    margin-right: auto;
-    width: 102px;
-    text-align: center;
-
-}
-
-div#tag_grid_edit
-{
-     width: 792px;
-}
-
 div#video div#video_edit {
     margin-top: 20px;
     margin-bottom: 20px;

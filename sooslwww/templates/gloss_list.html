@@ -3,7 +3,7 @@
 
   {% for gloss in glosses %}
   <li class="gloss">
-    <a class="{% block url_class %}gloss_url{% endblock %}" href="{{ gloss.url }}">
+    <a class="{% block url_class %}gloss_url{% endblock %}{% if gloss.selected %}_selected{% endif %}" href="{{ gloss.url }}">
       {{gloss.text}}
     </a>
   </li>
