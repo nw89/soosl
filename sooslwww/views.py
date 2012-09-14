@@ -17,7 +17,6 @@ from sooslwww.videoHandler import VideoUploadHandler
 from sooslwww.controllers.AllSignsFilterController import AllSignsFilterController
 from sooslwww.controllers.SignController import SignControllerView, SignControllerEdit
 
-import string
 import utils
 
 def index(request):
@@ -25,9 +24,9 @@ def index(request):
 
 def sign(request, sign_id, edit=False):
     if edit:
-	controller = SignControllerEdit(sign_id)
+        controller = SignControllerEdit(sign_id)
     else:
-	controller = SignControllerView(sign_id)
+        controller = SignControllerView(sign_id)
 
     return controller.Render(request, edit)
 
@@ -45,16 +44,13 @@ def add_remove_tag(request, sign_id, tag_id, remove_tag):
     tag = get_object_or_404(Tag, id=tag_id)
 
     if remove_tag:
-	requested_sign.tags.remove(tag)
+        requested_sign.tags.remove(tag)
     else:
-	requested_sign.tags.add(tag)
+        requested_sign.tags.add(tag)
 
     return HttpResponseRedirect(
-	reverse('sooslwww.views.edit_sign', args=(requested_sign.id,))
-	)
-
-# def add_gloss(request, sign_id):
-#     if request.method
+        reverse('sooslwww.views.edit_sign', args=(requested_sign.id,))
+        )
 
 def remove_gloss(request, sign_id, gloss_id):
     gloss = get_object_or_404(Gloss, id=gloss_id)
@@ -62,8 +58,8 @@ def remove_gloss(request, sign_id, gloss_id):
 
     sign.glosses.remove(gloss)
     return HttpResponseRedirect(
-	reverse('sooslwww.views.edit_sign', args=(sign.id,))
-	)
+        reverse('sooslwww.views.edit_sign', args=(sign.id,))
+        )
 
 
 
@@ -87,53 +83,53 @@ def all_signs_filter(request, tag_string, gloss_string):
     tag_text = tag_renderer.Render(request)
 
     return render_to_response(
-	'all_signs.html',
-	{'all_signs': filtered_signs,
-	 'tag_text': tag_text},
-	context_instance=RequestContext(request)
-	)
+        'all_signs.html',
+        {'all_signs': filtered_signs,
+         'tag_text': tag_text},
+        context_instance=RequestContext(request)
+        )
 
 def add_sign(request):
     if request.method == 'POST':
-	form = AddSignForm(request.POST, request.FILES)
-	if form.is_valid():
-	    uploadedVideo = request.FILES['videoFile'];
+        form = AddSignForm(request.POST, request.FILES)
+        if form.is_valid():
+            uploadedVideo = request.FILES['videoFile'];
 
-	    videoHandler = VideoUploadHandler(uploadedVideo)
+            videoHandler = VideoUploadHandler(uploadedVideo)
 
-	    #Check to see if the video has been updated already
-	    if Sign.objects.filter(videohash=videoHandler.hash()):
-		errors = form._errors.setdefault(
-		    "videoFile", ErrorList())
-		errors.append("That video has already been uploaded.")
+            #Check to see if the video has been updated already
+            if Sign.objects.filter(videohash=videoHandler.hash()):
+                errors = form._errors.setdefault(
+                    "videoFile", ErrorList())
+                errors.append("That video has already been uploaded.")
 
-	    else:
-		#Proceed to save it
-		success = videoHandler.encodeVideo()
+            else:
+                #Proceed to save it
+                success = videoHandler.encodeVideo()
 
-		if not success:
-		    errors = form._errors.setdefault(
-		    "videoFile", ErrorList())
-		    errors.append("That video could not be converted.")
-		else:
-		    newsign = Sign(videohash=videoHandler.hash())
-		    newsign.save()
-		    return HttpResponseRedirect(
-			reverse('sooslwww.views.sign', args=(newsign.id,))
-			)
+                if not success:
+                    errors = form._errors.setdefault(
+                    "videoFile", ErrorList())
+                    errors.append("That video could not be converted.")
+                else:
+                    newsign = Sign(videohash=videoHandler.hash())
+                    newsign.save()
+                    return HttpResponseRedirect(
+                        reverse('sooslwww.views.sign', args=(newsign.id,))
+                        )
 
 
     else:
-	form = AddSignForm()
+        form = AddSignForm()
     return render_to_response(
-	'addsign.html',
-	{'form': form},
-	context_instance=RequestContext(request)
-	)
+        'addsign.html',
+        {'form': form},
+        context_instance=RequestContext(request)
+        )
 
 def select_language(request, language_id):
     if not WrittenLanguage.objects.filter(id=language_id).exists():
-	raise Http404
+        raise Http404
 
     SetCurrentLanguage(request, language_id)
     return HttpResponseRedirect(request.path[0:-18])
@@ -143,7 +139,7 @@ def thumbnail(request, sign_id):
     requested_sign = get_object_or_404(Sign, id=sign_id)
 
     filePath = "%s/videos/thumbnails/%s.gif" % (
-	getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
+        getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
 
     return utils.generateFileHttpResponse(filePath, "image/gif");
 
@@ -151,6 +147,6 @@ def video(request, sign_id):
     requested_sign = get_object_or_404(Sign, id=sign_id)
 
     filePath = "%s/videos/mp4/%s.mp4" % (
-	getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
+        getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
 
     return utils.generateFileHttpResponse(filePath, "video/mp4");
