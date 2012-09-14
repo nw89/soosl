@@ -10,8 +10,7 @@ from sooslwww.models import Gloss, Sign, Tag, WrittenLanguage
 from sooslwww.utils import AddNewGloss
 
 from sooslwww.LanguageChooser import SetCurrentLanguage, CurrentLanguageID
-from sooslwww.GlossRenderer import GlossRenderer
-from sooslwww.TagRenderer import TagRenderer
+from sooslwww.renderers import GlossRenderer, TagRenderer
 from sooslwww.videoHandler import VideoUploadHandler
 
 from sooslwww.controllers.AllSignsFilterController import AllSignsFilterController

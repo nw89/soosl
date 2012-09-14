@@ -2,9 +2,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import  RequestContext
 from django.core.urlresolvers import reverse
 
-from sooslwww.GlossRenderer import GlossRenderer
 from sooslwww.LanguageChooser import CurrentLanguageID
-from sooslwww.TagRenderer import TagRenderer
+from sooslwww.renderers import GlossRenderer, TagRenderer
 
 from sooslwww.forms import AddGlossForm
 from sooslwww.models import Sign, Tag
