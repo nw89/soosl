@@ -9,12 +9,27 @@
 </head>
 <body>
 <div id="logo_bar">
-    <img src="{{ STATIC_URL }}images/left_column_logo.gif" alt="SIL International Home" width="144" height="98" hspace="0" vspace="0" border="0" align="left"/>
+    <img src="{{ STATIC_URL }}images/left_column_logo.gif" alt="SIL International Home" width="144" height="98" hspace="0" vspace="0" border="0" align="left" />
 </div>
-<div id="top_banner"></div>
+<div id="top_banner">
+  <div class="icon">
+    <a href="{% url sooslwww.views.all_signs %}">
+      <img src="{{ STATIC_URL }}images/all_signs.gif"  />
+    </a>
+  </div>
+  <div class="icon">
+    <a href="{% url sooslwww.views.add_sign %}">
+      <img src="{{ STATIC_URL }}images/add_sign.png"  />
+    </a>
+  </div>
+</div>
 <div id="nav_top">
+  <div class="nav_link">
     <a class="menuItem" href="{% url sooslwww.views.all_signs %}">VIEW ALL SIGNS</a>
+  </div>
+  <div class="nav_link">
     <a class="menuItem" href="{% url sooslwww.views.add_sign %}">ADD SIGN</a>
+  </div>
 </div>
 
 </script>
