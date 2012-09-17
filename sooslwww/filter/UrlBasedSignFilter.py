@@ -8,7 +8,7 @@ class InvalidTagException(Exception):
     pass
 
 def ExtractTags(filter_string):
-    if filter_string == '':
+    if filter_string == '' or filter_string == None:
         tag_strings = []
     else:
         tag_strings = string.split(filter_string, ',')
@@ -51,9 +51,14 @@ class StringList:
 
 
 class UrlBasedSignFilter:
-    def __init__(self, tag_string, gloss_string):
+    def __init__(self,
+                 tag_string,
+                 gloss_string,
+                 body_location_string):
         self._tag_strings = StringList(ExtractTags(tag_string))
         self._gloss_strings = StringList(ExtractTags(gloss_string))
+        self._body_location_strings = StringList(
+            ExtractTags(body_location_string))
 
         self._multi_filter = MultiFilter()
 
@@ -65,8 +70,6 @@ class UrlBasedSignFilter:
         self._filtered_signs = self._multi_filter.FilterSigns(
             list(Sign.objects.all()))
 
-
-
     def ObtainFilteredSigns(self):
         return self._filtered_signs
 
@@ -75,6 +78,10 @@ class UrlBasedSignFilter:
 
     def GlossInFilter(self, gloss):
         return self._gloss_strings.InList(str(gloss.id))
+
+    def BodyLocationInFilter(self, body_location):
+        return self._body_location_strings.InList(
+            str(body_location.id))
 
     def ObtainTagFilterString(self, tag):
         if self.TagInFilter(tag):
@@ -102,6 +109,18 @@ class UrlBasedSignFilter:
     def ObtainAllGlossesString(self):
         return (self._gloss_strings.CommaSeparatedString())
 
+    def ObtainBodyLocationFilterString(self, body_location):
+        if self.BodyLocationInFilter(body_location):
+            body_location_string = self._body_location_strings.\
+                CreateCSStringExcluding(str(body_location.id))
+        else:
+            body_location_string = self._body_location_strings.\
+                CreateCSStringIncluding(str(body_location.id))
+
+        return body_location_string
+
+    def ObtainAllBodyLocationsString(self):
+        return (self._body_location_strings.CommaSeparatedString())
 
 
     def _AddFilters(self, string_list, type):

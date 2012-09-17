@@ -45,11 +45,9 @@ class BodyLocationRenderer:
 
         location_types = BodyHeadLocationType.objects.all()
 
-        return loader.render_to_string(
-            "svg/body_locations.svg",
-            {"location_types": location_types,
-             "show_head": render_head,
-             "behind_body_locations": behind_locations_str,
+        return loader.render_to_string( "svg/body_locations.svg",
+        {"location_types": location_types, "show_head": render_head,
+        "behind_body_locations": behind_locations_str,
              "in_front_body_locations": in_front_locations_str},
             context_instance=RequestContext(request))
 

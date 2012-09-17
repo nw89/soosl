@@ -110,16 +110,10 @@ def remove_gloss(request, sign_id, gloss_id):
         )
 
 def all_signs(request):
-    return all_signs_filter(request, '', '')
+    return all_signs_filter(request, '')
 
-def all_signs_filter_tag(request, tag_string):
-    return all_signs_filter(request, tag_string, '')
-
-def all_signs_filter_gloss(request, gloss_string):
-    return all_signs_filter(request, '', gloss_string)
-
-def all_signs_filter(request, tag_string, gloss_string):
-    controller = AllSignsFilterController(tag_string, gloss_string)
+def all_signs_filter(request, filter_string):
+    controller = AllSignsFilterController(filter_string)
     return controller.Render(request)
 
 def add_sign(request):
@@ -175,6 +169,16 @@ def body_location(request, sign_id, edit):
     response.write(svg)
     return response
 
+def body_location_all(request):
+    return body_location_filter(request, '')
+
+def body_location_filter(request, filter_string):
+    controller = AllSignsFilterController(filter_string)
+    svg = controller.RenderBodyLocations(request)
+
+    response = HttpResponse(mimetype = "image/svg+xml")
+    response.write(svg)
+    return response;
 
 def select_language(request, language_id):
     if not WrittenLanguage.objects.filter(id=language_id).exists():

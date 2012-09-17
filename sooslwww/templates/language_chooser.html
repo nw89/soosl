@@ -1,8 +1,8 @@
 <form id="language_selector_form">
   <select id="language_selector" onchange="window.location.href = this.form.language_selector.options[this.form.language_selector.selectedIndex].value")>
     {% for language in languages %}
-    <option value="{{url_prefix}}select_language/{{language.id}}" {% if language.id == selected_language_id %}selected="selected"{% endif %}>{{language.name}}</option>
+    <option value="{{url_prefix}}/select_language/{{language.id}}" {% if language.id == selected_language_id %}selected="selected"{% endif %}>{{language.name}}</option>
     {% endfor %}
-    a{{selected_language_id}}a
+    {{selected_language_id}}
   </select>
 </form>

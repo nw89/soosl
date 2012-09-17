@@ -27,4 +27,8 @@
 <a href="{% url sooslwww.views.sign sign.id %}"><img class="sign_thumbnail" src="{% url sooslwww.views.thumbnail sign.id %}" alt="sign" /></a>
 {% endfor %}
 </div>
+<div id="body_locations">
+  <h2 class="block_label">Locations</h2>
+  <embed src="{{url_prefix}}/body_locations.svg" type="image/svg+xml" />
+</div>
 {% endblock %}
