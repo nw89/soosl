@@ -1,0 +1,2 @@
+{% extends "svg/shape.svg" %}
+{% block shape_params %}cx="{{shape.center_x}}" cy="{{shape.center_y}}" rx="{{shape.radius_x}}" ry="{{shape.radius_y}}"{% endblock %}

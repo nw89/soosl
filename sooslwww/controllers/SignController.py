@@ -10,7 +10,6 @@ from sooslwww.models import Sign, Tag
 
 from sooslwww.utils import AddNewGloss
 
-
 class SignController(object):
     def __init__(self, sign_id):
         self._requested_sign = get_object_or_404(Sign, id=sign_id);
@@ -19,14 +18,12 @@ class SignController(object):
     def Render(self, request, edit):
         self._PreprocessRequest(request)
 
-        glossText = self._GetGlossText(request)
-
         return render_to_response(
             self.TemplateFile(),
             dict(
                 {'sign': self._requested_sign,
                  'tag_text': self.GetTagText(request),
-                 'gloss_text': glossText,
+                 'gloss_text': self._GetGlossText(request),
                  }.items() +
                 self._GetExtraComponents().items()),
             context_instance=RequestContext(request))

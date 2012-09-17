@@ -1,0 +1,1 @@
+<a xlink:href="{{url}}"><{{shape.Shape_str}} class="{{location_type}}{% if selected %}_selected{% endif %}" {% block shape_params %}{% endblock %}><title>{{shape.text}}</title></{{shape.Shape_str}}></a>

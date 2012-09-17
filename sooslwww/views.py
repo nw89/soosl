@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import Context, RequestContext
 
 from sooslwww.forms import AddSignForm
-from sooslwww.models import Gloss, Sign, Tag, WrittenLanguage
+from sooslwww.models import Gloss, Sign, Tag, WrittenLanguage, BodyLocation
 
 from sooslwww.LanguageChooser import SetCurrentLanguage
 from sooslwww.videoHandler import VideoUploadHandler
@@ -14,10 +14,28 @@ from sooslwww.videoHandler import VideoUploadHandler
 from sooslwww.controllers.AllSignsFilterController import AllSignsFilterController
 from sooslwww.controllers.SignController import SignControllerView, SignControllerEdit
 
+from sooslwww.BodyLocationRenderer import GetSVGForSign, BodyLocationRenderer
+
 import utils
 
 def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
+
+def importBP(request):
+    from sooslwww.ImportBodyParts import ImportBodyParts
+    ImportBodyParts()
+    return HttpResponse("Import finished")
+
+def all_body_locations(request):
+    renderer = BodyLocationRenderer()
+    all_locations = BodyLocation.objects.all()
+    for location in all_locations:
+        renderer.AddLocation(False, 'test', location)
+    svg = renderer.Render(request)
+    response = HttpResponse(mimetype = "image/svg+xml")
+    response.write(svg)
+    return response
+
 
 def sign(request, sign_id, edit=False):
     if edit:
@@ -49,6 +67,39 @@ def add_remove_tag(request, sign_id, tag_id, remove_tag):
         reverse('sooslwww.views.edit_sign', args=(requested_sign.id,))
         )
 
+def add_body_location(request, sign_id, body_location_id):
+    return add_remove_body_location(request,
+                                    sign_id,
+                                    body_location_id,
+                                    False)
+
+def remove_body_location(request,
+                         sign_id,
+                         body_location_id):
+    return add_remove_body_location(request,
+                                    sign_id,
+                                    body_location_id,
+                                    True)
+
+def add_remove_body_location(request,
+                             sign_id,
+                             body_location_id,
+                             remove_body_location):
+    requested_sign = get_object_or_404(Sign, id=sign_id)
+    body_location = get_object_or_404(BodyLocation,
+                                      id=body_location_id)
+
+    if remove_body_location:
+        requested_sign.RemoveBodyLocation(body_location)
+    else:
+        requested_sign.AddBodyLocation(body_location)
+
+    return HttpResponseRedirect(
+        reverse('sooslwww.views.body_location_view',
+                args=(requested_sign.id,)
+                ))
+
+
 def remove_gloss(request, sign_id, gloss_id):
     gloss = get_object_or_404(Gloss, id=gloss_id)
     sign = get_object_or_404(Sign, id=sign_id)
@@ -57,8 +108,6 @@ def remove_gloss(request, sign_id, gloss_id):
     return HttpResponseRedirect(
         reverse('sooslwww.views.edit_sign', args=(sign.id,))
         )
-
-
 
 def all_signs(request):
     return all_signs_filter(request, '', '')
@@ -110,6 +159,22 @@ def add_sign(request):
         {'form': form},
         context_instance=RequestContext(request)
         )
+
+def body_location_view(request, sign_id):
+    return body_location(request, sign_id, False)
+
+def body_location_edit(request, sign_id):
+    return body_location(request, sign_id, True)
+
+def body_location(request, sign_id, edit):
+    requested_sign = get_object_or_404(Sign, id=sign_id)
+
+    svg = GetSVGForSign(requested_sign, edit, request)
+
+    response = HttpResponse(mimetype = "image/svg+xml")
+    response.write(svg)
+    return response
+
 
 def select_language(request, language_id):
     if not WrittenLanguage.objects.filter(id=language_id).exists():

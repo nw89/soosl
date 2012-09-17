@@ -1,0 +1,2 @@
+{% extends "svg/shape.svg" %}
+{% block shape_params %}points="{% for point in shape.Points %}{{point.x}},{{point.y}} {% endfor %}"{% endblock %}

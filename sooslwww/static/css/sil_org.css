@@ -184,6 +184,12 @@ div#tag_grid_top
      width: 512px;
 }
 
+div#body_locations {
+    text-align:center;
+    margin: 20px;
+    border: 1px #999 solid;
+    padding: 5px;
+}
 #abstract {
     margin-right: 30px;
     margin-left: 30px;

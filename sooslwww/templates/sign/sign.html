@@ -12,7 +12,7 @@
 
 {% block left %}
 <div id="glosses">
-  <h2 class=block_label>Glosses</h2>
+  <h2 class="block_label">Glosses</h2>
   {% load language_chooser %}
   {% language_chooser %}
   {{ gloss_text }}
@@ -24,14 +24,19 @@
 <div id="{% block video_div_id %}{% endblock %}">
 <video id="h264" src="{% url sooslwww.views.video sign.id %}"></video>
 </div>
+<div id="body_locations">
+  <h2 class="block_label">Locations</h2>
+  {% block below_video %}{% endblock %}
+</div>
 {% endblock %}
 
 {% block right %}
-<div id="{% block tags_div_id %}{% endblock %}">
-  <h2 class=block_label>Tags</h2>
-  {{ tag_text }}
+  <div id="{% block tags_div_id %}{% endblock %}">
+    <h2 class="block_label">Tags</h2>
+    {{ tag_text }}
+    {% block below_tags %}{% endblock %}
+  </div>
 
-  {% block below_tags %}{% endblock %}
 </div>
 
 {% endblock %}

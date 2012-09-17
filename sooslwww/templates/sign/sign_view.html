@@ -11,3 +11,7 @@
 {% block below_tags %}
   <a id="tags_link" href="{% url sooslwww.views.edit_sign sign.id %}">Edit</a>
 {% endblock %}
+
+{% block below_video %}
+<embed src="{%url sooslwww.views.body_location_view sign.id %}" type="image/svg+xml" />
+{% endblock %}
