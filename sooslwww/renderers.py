@@ -1,9 +1,5 @@
 from django.template import RequestContext, loader
 
-from sooslwww.models import WrittenLanguage, Gloss
-
-from sooslwww.LanguageChooser import CurrentLanguageID
-
 class RenderedAttribute(object):
     def __init__(self, text, url, selected):
         self.text = text
@@ -12,19 +8,20 @@ class RenderedAttribute(object):
 
 class Renderer(object):
     def __init__(self):
-        self._tags = []
+        self._attributes = []
 
-    def _AddTag(self, tag):
-        self._tags.append(tag)
+    def Render(self, request):
+        raise NotImplementedError
+
+
+    def _AddAttribute(self, attributes):
+        self._attributes.append(attributes)
 
     def _RenderTemplate(self, request, template, attribute_name):
            return loader.render_to_string(
              template,
-             {attribute_name: self._tags},
+             {attribute_name: self._attributes},
              context_instance=RequestContext(request))
-
-    def Render(self, request):
-        raise NotImplementedError
 
 
 class RenderedTag(RenderedAttribute):
@@ -35,7 +32,7 @@ class RenderedTag(RenderedAttribute):
 
 class TagRenderer(Renderer):
     def AddTag(self, tag, selected, tag_url):
-        self._AddTag(
+        self._AddAttribute(
             RenderedTag(tag, tag_url, selected)
             )
 
@@ -44,7 +41,7 @@ class TagRenderer(Renderer):
 
 class GlossRenderer(Renderer):
     def AddGloss(self, gloss, selected, url):
-        self._AddTag(
+        self._AddAttribute(
             RenderedAttribute(gloss.text, url, selected))
 
     def Render(self, request, template):
