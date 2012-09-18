@@ -1,8 +1,11 @@
 import string
 
-from sooslwww.filter.filters import MultiFilter
-from sooslwww.models import Gloss, Sign, Tag
+from django.core.urlresolvers import reverse
+
 from sooslwww import utils
+from sooslwww.filter.filters import MultiFilter
+from sooslwww.models import BodyLocation, Gloss, Sign, Tag
+
 
 class InvalidTagException(Exception):
     pass

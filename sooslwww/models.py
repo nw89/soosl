@@ -150,7 +150,7 @@ class Sign(models.Model):
         elif type(gloss) == Gloss:
             return (self.glosses.filter(id__exact=gloss.id).exists())
         else:
-            raise NotImplementedError()
+            raise NotImplementedError
 
     def HasBodyLocation(self, location):
         if type(location) == unicode:
@@ -160,7 +160,17 @@ class Sign(models.Model):
         elif type(location) == BodyLocation:
             return (self.body_locations.filter(id__exact=location.id).exists())
         else:
-            raise NotImplementedError()
+            raise NotImplementedError
+
+    def HasAttribute(self, attribute):
+        if type(attribute) == BodyLocation:
+            return self.HasBodyLocation(attribute)
+        elif type(attribute) == Gloss:
+            return self.HasGloss(attribute)
+        elif type(attribute) == Tag:
+            return self.HasTag(attribute)
+        else:
+            raise NotImplementedError
 
     def HasAHeadLocation(self):
         return(self.body_locations.filter(
