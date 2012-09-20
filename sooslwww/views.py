@@ -37,16 +37,14 @@ def all_body_locations(request):
     return response
 
 
-def sign(request, sign_id, edit=False):
-    if edit:
-        controller = SignControllerEdit(sign_id)
-    else:
-        controller = SignControllerView(sign_id)
+def sign(request, sign_id):
+    controller = SignControllerView(sign_id)
 
-    return controller.Render(request, edit)
+    return controller.Render(request)
 
 def edit_sign(request, sign_id):
-    return sign(request, sign_id, True)
+    controller = SignControllerEdit(sign_id)
+    return controller.Render(request)
 
 def add_tag(request, sign_id, tag_id):
     return add_remove_tag(request, sign_id, tag_id, False)

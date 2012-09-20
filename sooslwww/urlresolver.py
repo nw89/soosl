@@ -3,22 +3,22 @@ from django.core.urlresolvers import reverse
 from sooslwww.models import BodyLocation, Gloss, Tag
 
 def AddAttributeUrl(sign, attribute):
-    if type(attribute) == BodyLocation:
+    if attribute.__class__ == BodyLocation:
         view = 'sooslwww.views.add_body_location'
-    elif type(attribute) == Gloss:
+    elif attribute.__class__ == Gloss:
         view = 'sooslwww.views.add_gloss'
-    elif type(attribute) == Tag:
+    elif attribute.__class__ == Tag:
         view = 'sooslwww.views.add_tag'
 
     return reverse(view,
                    args=(sign.id, attribute.id))
 
 def RemoveAttributeUrl(sign, attribute):
-    if type(attribute) == BodyLocation:
+    if attribute.__class__ == BodyLocation:
         view = 'sooslwww.views.remove_body_location'
-    elif type(attribute) == Gloss:
+    elif attribute.__class__ == Gloss:
         view = 'sooslwww.views.remove_gloss'
-    elif type(attribute) == Tag:
+    elif attribute.__class__ == Tag:
         view = 'sooslwww.views.remove_tag'
 
     return reverse(view,
@@ -26,14 +26,21 @@ def RemoveAttributeUrl(sign, attribute):
 
 
 def ViewSignsWithAttributeUrl(attribute):
-    if type(attribute) == BodyLocation:
+    if attribute.__class__ == BodyLocation:
         filter_string = '/body_locations/'
-    elif type(attribute) == Gloss:
+    elif attribute.__class__ == Gloss:
         filter_string = '/glosses/'
-    if type(attribute) == Tag:
+    if attribute.__class__ == Tag:
         filter_string = '/tags/'
 
     filter_string += str(attribute.id)
 
     return reverse('sooslwww.views.all_signs_filter',
+                   kwargs={'filter_string': filter_string})
+
+def SignFilterUrl(filter_string):
+    if filter_string == '':
+        return reverse('sooslwww.views.all_signs')
+    else:
+        return reverse('sooslwww.views.all_signs_filter',
                    kwargs={'filter_string': filter_string})

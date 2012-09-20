@@ -30,17 +30,17 @@ class BodyLocationFilter(Filter):
         self._body_location = body_location
 
     def SignMatches(self, sign):
-        return (sign.HasBody_Location(self._body_location))
+        return (sign.HasBodyLocation(self._body_location))
 
 
 def ObtainFilter(attribute):
-    if type(attribute) == Tag:
+    if attribute.__class__ == Tag:
         return TagFilter(attribute)
 
-    elif type(attribute) == Gloss:
+    elif attribute.__class__ == Gloss:
         return GlossFilter(attribute)
 
-    elif type(attribute) == BodyLocation:
+    elif attribute.__class__ == BodyLocation:
         return BodyLocationFilter(attribute)
 
     else:

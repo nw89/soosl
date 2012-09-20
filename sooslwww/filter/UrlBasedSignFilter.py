@@ -1,21 +1,11 @@
-import string
+import re, string
 
-from django.core.urlresolvers import reverse
+from django.http import Http404
 
 from sooslwww import utils
 from sooslwww.filter.filters import MultiFilter
 from sooslwww.models import BodyLocation, Gloss, Sign, Tag
 
-
-class InvalidTagException(Exception):
-    pass
-
-def ExtractTags(filter_string):
-    if filter_string == '' or filter_string == None:
-        tag_strings = []
-    else:
-        tag_strings = string.split(filter_string, ',')
-    return tag_strings
 
 def CreateCommaSeparatedString(string_list):
     filter_string = ''
@@ -26,107 +16,160 @@ def CreateCommaSeparatedString(string_list):
     return(utils.StripLastComma(filter_string))
 
 
-class StringList:
-    def __init__(self, string_list):
-        self._string_list = string_list
+class CSVStringProcessor:
+    def __init__(self, name, attribute_type, csv_string):
+        self._name = name
+        self._type = attribute_type
+        self._strings = self._ExtractTags(csv_string)
 
     def Strings(self):
-        return self._string_list
+        return self._strings
 
-    def InList(self, string):
-        return (self._string_list.count(string) > 0)
+    def Name(self):
+        return self._name
 
-    def CommaSeparatedString(self):
-        return (CreateCommaSeparatedString
-                (self._string_list))
+    def Attribute_Type(self):
+        return self._type
 
-    def CreateCSStringExcluding(self, string):
-        string_list_copy = list(self._string_list)
-        string_list_copy.remove(string)
+    def InList(self, attribute_string):
+        return (self._strings.count(attribute_string) > 0)
+
+    def Empty(self):
+        return (len(self._strings > 0))
+
+    def ObtainCSString(self):
+        return self._AppendName(CreateCommaSeparatedString
+                                (self._strings))
+
+    def ObtainModifiedCSString(self,
+                               attribute_string):
+
+        modified_string = self._CreateModifiedCSString(
+            attribute_string)
+
+        modified_string = self._AppendName(modified_string)
+
+        return modified_string
+
+    def _CreateModifiedCSString(self, filter_string):
+        exclude_attribute = (self.InList(filter_string))
+
+        string_list_copy = list(self._strings)
+
+        if exclude_attribute:
+            string_list_copy.remove(filter_string)
+        else:
+            string_list_copy.append(filter_string)
+
         return(CreateCommaSeparatedString
                (string_list_copy))
 
-    def CreateCSStringIncluding(self, string):
-        string_list_copy = list(self._string_list)
-        string_list_copy.append(string)
-        return(CreateCommaSeparatedString
-               (string_list_copy))
+    def _AppendName(self, filter_string):
+        # Only append if not empty
+        if filter_string == '':
+            return ''
+        else:
+            return ('/' + self.Name() + '/' + filter_string)
 
+    def _ExtractTags(self, filter_string):
+        if filter_string == '' or filter_string == None:
+            return []
+        else:
+            return string.split(filter_string, ',')
+
+
+class FilterStringProcessor:
+    def __init__(self, filter_string, types):
+        self._string_processors = list()
+
+        self._ProcessFilterString(filter_string, types)
+
+    def InList(self, attribute):
+        for string_processor in self._string_processors:
+            if string_processor.Attribute_Type() == attribute.__class__:
+                return string_processor.InList(str(attribute.id))
+
+        raise NotImplementedError
+
+    def ObtainAttributes(self):
+        attributes = list()
+
+        for string_processor in self._string_processors:
+            attribute_strings = string_processor.Strings()
+            for attribute_string in attribute_strings:
+                attributes.append(
+                    string_processor.\
+                        Attribute_Type().objects.get(id=attribute_string)
+                    )
+
+        return attributes
+
+    def ObtainToggleFilterString(self, attribute):
+        filter_string = ''
+
+        for string_list in self._string_processors:
+            if string_list.Attribute_Type() == attribute.__class__:
+                filter_string += \
+                    string_list.ObtainModifiedCSString(
+                    str(attribute.id))
+            else:
+                filter_string += \
+                    string_list.ObtainCSString()
+
+        return filter_string
+
+    def _ProcessFilterString(self, filter_string, types):
+
+        url_resolver = re.compile(self._ObtainREString(types))
+
+        matches = url_resolver.match(filter_string)
+
+        self._ProcessMatches(matches, types)
+
+    def _ObtainREString(self, types):
+        re_string = ''
+        for attribute_type in types:
+            re_string += '(?:/' + attribute_type.AttributesString()\
+                + '/(?P<' + attribute_type.AttributesString() + \
+                '>(?:\d+,)*\d+))?'
+        return re_string
+
+    def _ProcessMatches(self, matches, types):
+        if matches == None:
+            raise Http404
+
+        for attribute_type in types:
+            self._string_processors.append(
+                CSVStringProcessor(
+                    attribute_type.AttributesString(),
+                    attribute_type,
+                    matches.group(attribute_type.AttributesString())
+                    ))
 
 class UrlBasedSignFilter:
     def __init__(self,
-                 tag_string,
-                 gloss_string,
-                 body_location_string):
-        self._tag_strings = StringList(ExtractTags(tag_string))
-        self._gloss_strings = StringList(ExtractTags(gloss_string))
-        self._body_location_strings = StringList(
-            ExtractTags(body_location_string))
+                 filter_string):
+        self.string_processor = FilterStringProcessor(
+            filter_string,
+            [BodyLocation, Tag, Gloss])
 
         self._multi_filter = MultiFilter()
 
-        # TODO: In production use a query
-        self._AddFilters(self._tag_strings, Tag)
-        self._AddFilters(self._gloss_strings, Gloss)
-
-        # Start with all signs
-        self._filtered_signs = self._multi_filter.FilterSigns(
-            list(Sign.objects.all()))
+        self._AddFilters(self.string_processor.ObtainAttributes())
 
     def ObtainFilteredSigns(self):
-        return self._filtered_signs
+        filtered_signs = self._multi_filter.FilterSigns(
+            list(Sign.objects.all()))
 
-    def TagInFilter(self, tag):
-        return self._tag_strings.InList(str(tag.id))
+        return filtered_signs
 
-    def GlossInFilter(self, gloss):
-        return self._gloss_strings.InList(str(gloss.id))
+    def InFilter(self, attribute):
+        return self.string_processor.InList(attribute)
 
-    def BodyLocationInFilter(self, body_location):
-        return self._body_location_strings.InList(
-            str(body_location.id))
+    def ObtainToggleFilterString(self, attribute):
+       return self.string_processor.ObtainToggleFilterString(attribute)
 
-    def ObtainTagFilterString(self, tag):
-        if self.TagInFilter(tag):
-            tag_string = self._tag_strings.\
-                CreateCSStringExcluding(str(tag.id))
-        else:
-            tag_string = self._tag_strings.\
-                CreateCSStringIncluding(str(tag.id))
+    def _AddFilters(self, attributes):
 
-        return tag_string
-
-    def ObtainAllTagsString(self):
-        return (self._tag_strings.CommaSeparatedString())
-
-    def ObtainGlossFilterString(self, gloss):
-        if self.GlossInFilter(gloss):
-            gloss_string = self._gloss_strings.\
-                CreateCSStringExcluding(str(gloss.id))
-        else:
-            gloss_string = self._gloss_strings.\
-                CreateCSStringIncluding(str(gloss.id))
-
-        return gloss_string
-
-    def ObtainAllGlossesString(self):
-        return (self._gloss_strings.CommaSeparatedString())
-
-    def ObtainBodyLocationFilterString(self, body_location):
-        if self.BodyLocationInFilter(body_location):
-            body_location_string = self._body_location_strings.\
-                CreateCSStringExcluding(str(body_location.id))
-        else:
-            body_location_string = self._body_location_strings.\
-                CreateCSStringIncluding(str(body_location.id))
-
-        return body_location_string
-
-    def ObtainAllBodyLocationsString(self):
-        return (self._body_location_strings.CommaSeparatedString())
-
-
-    def _AddFilters(self, string_list, type):
-        for string in string_list.Strings():
-            attribute = type.objects.get(id=int(string))
+        for attribute in attributes:
             self._multi_filter.AddFilter(attribute)

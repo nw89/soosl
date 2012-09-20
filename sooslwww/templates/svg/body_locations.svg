@@ -1,35 +1,11 @@
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
-"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:xlink="http://www.w3.org/1999/xlink"
      version="1.1"
      width="330.0"
      height="280.0">
 
-  <style type="text/css" >
-    <![CDATA[
-             {% for type in location_types %}
-             .{{type.text}} {
-             stroke: #808080;
-             fill:   #D3D3D3;
-             }
-
-             .{{type.text}}_selected {
-             stroke: #808080;
-             fill:   {{type.color}};
-             }
-
-             .{{type.text}}:hover {
-             stroke: #808080;
-             fill:   {{type.hover_color}};
-             }
-             {% endfor %}}
-
-    ]]>
-  </style>
-
+  {% load body_location_style %}
+  {% body_location_style %}
 
   {{behind_body_locations|safe}}
 
@@ -40,5 +16,4 @@
   {% endif %}
 
   {{in_front_body_locations|safe}}
-
 </svg>

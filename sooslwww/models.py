@@ -1,20 +1,20 @@
-import string
-
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 # Create your models here.
-
 class TagType(models.Model):
     def __unicode__(self):
         return self.text
 
     text = models.TextField(max_length = 128)
 
-
 class Tag(models.Model):
     def __unicode__(self):
         return self.graphic.name
+
+    @staticmethod
+    def AttributesString():
+        return 'tags'
 
     type = models.ForeignKey(TagType)
     text = models.TextField(max_length = 128)
@@ -35,6 +35,10 @@ class Dialect(models.Model):
 
 
 class Gloss(models.Model):
+    @staticmethod
+    def AttributesString():
+        return 'glosses'
+
     def __unicode__(self):
         return self.text
 
@@ -43,12 +47,17 @@ class Gloss(models.Model):
 
     dialects = models.ManyToManyField(Dialect, blank=True, null=True)
 
+
 class BodyHeadLocationType(models.Model):
     text=models.CharField(max_length=64)
     color=models.CharField(max_length=32)
     hover_color=models.CharField(max_length=32)
 
 class BodyLocation(models.Model):
+    @staticmethod
+    def AttributesString():
+        return 'body_locations'
+
     text=models.CharField(max_length=128)
     type=models.ForeignKey(BodyHeadLocationType)
     behind=models.BooleanField(False)
@@ -65,7 +74,7 @@ class BodyLocation(models.Model):
     @staticmethod
     def GetHead():
         return (BodyLocation.objects.get(
-                id=BodyLocation.HEAD_ID))
+        id=BodyLocation.HEAD_ID))
 
     #The following fields allow the subclass to be obtained from this (paretn class)
     shape = models.ForeignKey(ContentType,editable=False)
@@ -77,7 +86,6 @@ class BodyLocation(models.Model):
 
     def get_instance(self):
         return self.shape.get_object_for_this_type(id=self.id)
-
 
 class BodyLocationCircle(BodyLocation):
     def Shape_str(self):
@@ -106,15 +114,15 @@ class BodyLocationRectangle(BodyLocation):
     height=models.DecimalField(max_digits=5,decimal_places=2)
 
 class BodyLocationPolygon(BodyLocation):
-        def Shape_str(self):
-            return 'polygon'
+    def Shape_str(self):
+        return 'polygon'
 
-        def Points(self):
-            return self.points.all()
+    def Points(self):
+        return self.points.all()
 
 class BodyLocationPolygonPoint(models.Model):
     polygon=models.ForeignKey(BodyLocationPolygon,
-                              related_name='points')
+                  related_name='points')
     x=models.DecimalField(max_digits=5,decimal_places=2)
     y=models.DecimalField(max_digits=5,decimal_places=2)
 
@@ -128,8 +136,8 @@ class Sign(models.Model):
     tags = models.ManyToManyField(Tag, blank=True, null=True);
     glosses = models.ManyToManyField(Gloss, blank=True, null=True)
     body_locations = models.ManyToManyField(BodyLocation,
-                                            blank=True,
-                                            null=True)
+                        blank=True,
+                        null=True)
 
     def HasTag(self, tag):
         if type(tag) == unicode:
@@ -137,7 +145,7 @@ class Sign(models.Model):
         elif type(tag) == int:
             return (self.tags.filter(id__exact=tag).exists())
 
-        elif type(tag) == Tag:
+        elif tag.__class__ == Tag:
             return (self.tags.filter(id__exact=tag.id).exists())
         else:
             raise NotImplementedError()
@@ -147,7 +155,7 @@ class Sign(models.Model):
             return (self.glosses.filter(id__exact=int(gloss)).exists())
         if type(gloss) == int:
             return (self.glosses.filter(id__exact=gloss).exists())
-        elif type(gloss) == Gloss:
+        elif gloss.__class__ == Gloss:
             return (self.glosses.filter(id__exact=gloss.id).exists())
         else:
             raise NotImplementedError
@@ -157,24 +165,24 @@ class Sign(models.Model):
             return (self.body_locations.filter(id__exact=int(location)).exists())
         if type(location) == int:
             return (self.body_locations.filter(id__exact=location).exists())
-        elif type(location) == BodyLocation:
+        elif location.__class__ == BodyLocation:
             return (self.body_locations.filter(id__exact=location.id).exists())
         else:
             raise NotImplementedError
 
     def HasAttribute(self, attribute):
-        if type(attribute) == BodyLocation:
+        if attribute.__class__ == BodyLocation:
             return self.HasBodyLocation(attribute)
-        elif type(attribute) == Gloss:
+        elif attribute.__class__ == Gloss:
             return self.HasGloss(attribute)
-        elif type(attribute) == Tag:
+        elif attribute.__class__ == Tag:
             return self.HasTag(attribute)
         else:
             raise NotImplementedError
 
     def HasAHeadLocation(self):
         return(self.body_locations.filter(
-                id=BodyLocation.GetHead().id).exists())
+            id=BodyLocation.GetHead().id).exists())
 
     def RemoveBodyLocation(self, location):
         self.body_locations.remove(location)
@@ -194,3 +202,7 @@ class Sign(models.Model):
 
         if location.on_head:
             self.AddBodyLocation(BodyLocation.GetHead())
+
+    def GlossesForLanguage(self, language_id):
+        return (self.glosses.filter(
+            language__id=language_id))

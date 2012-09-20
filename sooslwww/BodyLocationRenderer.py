@@ -1,7 +1,7 @@
-from django.core.urlresolvers import reverse
 from django.template import RequestContext, loader
 
 from sooslwww.models import BodyHeadLocationType, BodyLocation
+from sooslwww.urlresolver import AddAttributeUrl, RemoveAttributeUrl, ViewSignsWithAttributeUrl
 
 class BodyLocationWithAttributes:
     def __init__(self, selected, url, body_location):
@@ -28,6 +28,7 @@ class BodyLocationRenderer:
 
     def Render(self, request, render_head):
         behind_locations_str = ''
+
         in_front_locations_str = ''
 
         for location in self._locations:
@@ -38,6 +39,7 @@ class BodyLocationRenderer:
                  "selected" : location.Selected(),
                  "shape": shape,
                  "url": location.Url() })
+
             if shape.behind:
                 behind_locations_str += location_string
             else:
@@ -52,8 +54,7 @@ class BodyLocationRenderer:
             context_instance=RequestContext(request))
 
 def GetSVGForSign(sign, edit, request):
-    at_least_one_head_location = sign.HasAHeadLocation()
-    if at_least_one_head_location:
+    if sign.HasAHeadLocation():
         body_locations = BodyLocation.objects.all()
     else:
         body_locations = BodyLocation.objects.filter(
@@ -62,22 +63,21 @@ def GetSVGForSign(sign, edit, request):
     body_location_renderer = BodyLocationRenderer()
 
     for location in body_locations:
-
-        if sign.HasBodyLocation(location):
-            location_url = reverse(
-                'sooslwww.views.remove_body_location',
-                args=(sign.id,
-                      location.id))
-        else:
-            location_url = reverse(
-                'sooslwww.views.add_body_location',
-                args=(sign.id,
-                      location.id))
-
         body_location_renderer.AddLocation(
             sign.HasBodyLocation(location),
-            location_url,
+            LocationUrl(edit, location, sign),
             location)
 
     return body_location_renderer.Render(request,
-                                         at_least_one_head_location)
+                                         sign.HasAHeadLocation())
+
+def LocationUrl(edit, location, sign):
+    if edit:
+        if sign.HasBodyLocation(location):
+            location_url = RemoveAttributeUrl(sign, location)
+        else:
+            location_url = AddAttributeUrl(sign, location)
+
+    else:
+        location_url = ViewSignsWithAttributeUrl(location)
+    return location_url

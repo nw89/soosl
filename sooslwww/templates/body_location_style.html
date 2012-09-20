@@ -1,0 +1,21 @@
+<style type="text/css" >
+    <![CDATA[
+             {% for type in location_types %}
+             .{{type.text}} {
+             stroke: #808080;
+             fill:   #D3D3D3;
+             }
+
+             .{{type.text}}_selected {
+             stroke: #808080;
+             fill:   {{type.color}};
+             }
+
+             .{{type.text}}:hover {
+             stroke: #808080;
+             fill:   {{type.hover_color}};
+             }
+             {% endfor %}}
+
+    ]]>
+</style>

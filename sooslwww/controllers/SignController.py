@@ -1,91 +1,102 @@
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import  RequestContext
-from sooslwww.urlresolver import AddAttributeUrl, RemoveAttributeUrl, ViewSignsWithAttributeUrl
+from django.shortcuts import get_object_or_404
 
 from sooslwww.LanguageChooser import CurrentLanguageID
+from sooslwww.controllers.Controller import AbstractController
 from sooslwww.forms import AddGlossForm
 from sooslwww.models import Sign, Tag
-from sooslwww.renderers import GlossRenderer, TagRenderer
+from sooslwww.renderers import AttributeRenderer
+from sooslwww.urlresolver import AddAttributeUrl, RemoveAttributeUrl, ViewSignsWithAttributeUrl
 from sooslwww.utils import AddNewGloss
 
-
-class SignController(object):
+class SignController(AbstractController):
     def __init__(self, sign_id):
-        self._requested_sign = get_object_or_404(Sign, id=sign_id);
+        AbstractController.__init__(self)
+        self._requested_sign = get_object_or_404(Sign, id=sign_id)
 
-    def Render(self, request, edit):
-        self._PreprocessRequest(request)
+    def _PreprocessRequest(self, request):
+        self._AddToDictionary('sign', self._requested_sign);
 
-        return render_to_response(
-            self.TemplateFile(),
-            dict(
-                {'sign': self._requested_sign,
-                 'tag_text': self.GetTagText(request),
-                 'gloss_text': self._GetGlossText(request),
-                 }.items() +
-                self._GetExtraComponents().items()),
-            context_instance=RequestContext(request))
+        self.__AddTagText(request)
+        self.__AddGlossText(request)
 
-    def GetTagText(self,request):
-        tag_renderer = TagRenderer()
+    def __AddTagText(self, request):
+        tag_renderer = AttributeRenderer()
 
         tags = self._GetRelevantTags()
 
         for tag in tags:
-            tag_renderer.AddTag(
+            tag_renderer.AddAttribute(
                 tag,
-                self._AttributeIsSelected(tag),
-                self._GetAttributeUrl(tag)
+                self._GetAttributeUrl(tag),
+                self._TagIsSelected(tag),
                 )
 
-        return tag_renderer.Render(request)
+        tag_text = tag_renderer.Render(request, 'tags.html', 'tags')
+
+        self._AddToDictionary('tag_text', tag_text)
 
     def _GetRelevantTags(self):
         raise NotImplementedError
 
-    def _GetGlossText(self, request):
-        glosses = self._requested_sign.glosses.filter(
-            language__id=CurrentLanguageID(request))
-
-        gloss_renderer = GlossRenderer()
-        for gloss in glosses:
-            # A gloss isn't ever selected when viewing a sign
-            gloss_renderer.AddGloss(gloss,
-                                    False,
-                                    self._GetAttributeUrl(gloss))
-
-        return gloss_renderer.Render(
-            request,
-            self._GlossTemplateFile())
-
-    def _GetExtraComponents(self):
-        return {}
-
-    def _PreprocessRequest(self, request):
-        pass
-
-    def _GlossTemplateFile(self):
-        return 'gloss_list.html'
-
-    def _AttributeIsSelected(self, attribute):
+    def _TagIsSelected(self, attribute):
         raise NotImplementedError
+
+    def __AddGlossText(self, request):
+        gloss_renderer = AttributeRenderer()
+
+        glosses = self._requested_sign.\
+            GlossesForLanguage(CurrentLanguageID(request))
+
+        for gloss in glosses:
+            # A gloss isn't ever selected when viewing or editing a sign
+            gloss_renderer.AddAttribute(
+                gloss,
+                self._GetAttributeUrl(gloss),
+                False)
+
+        gloss_text =  gloss_renderer.Render(request,
+                                            'gloss_list.html',
+                                            'glosses')
+
+        self._AddToDictionary('gloss_text', gloss_text)
 
     def _GetAttributeUrl(self, attribute):
         raise NotImplementedError
-
 
 class SignControllerEdit(SignController):
     def __init__(self, sign_id):
-        super(SignControllerEdit, self).__init__(sign_id)
+        SignController.__init__(self, sign_id)
 
-    def TemplateFile(self):
+    def _PreprocessRequest(self, request):
+        if request.method == 'POST':
+            add_gloss_form = AddGlossForm(request.POST)
+            if add_gloss_form.is_valid():
+                AddNewGloss(
+                    self._requested_sign,
+                    CurrentLanguageID(request),
+                    add_gloss_form.cleaned_data['gloss_text'])
+
+                #Clear form
+                add_gloss_form = AddGlossForm()
+
+        else:
+            add_gloss_form = AddGlossForm()
+
+        #Add the gloss form
+        self._AddToDictionary('add_gloss_form',
+                              add_gloss_form)
+
+        #Call parent method to finish the job
+        SignController._PreprocessRequest(self, request)
+
+    def _TemplateFile(self):
         return 'sign/sign_edit.html'
 
-    def _AttributeIsSelected(self, attribute):
+    def _TagIsSelected(self, attribute):
         return self._requested_sign.HasAttribute(attribute)
 
     def _GetAttributeUrl(self, attribute):
-        if self._AttributeIsSelected(attribute):
+        if self._TagIsSelected(attribute):
             url =  RemoveAttributeUrl(self._requested_sign,
                                      attribute)
         else:
@@ -97,50 +108,22 @@ class SignControllerEdit(SignController):
     def _GlossTemplateFile(self):
         return 'sign/sign_glosses_edit.html'
 
-    def EditMode(self):
-        return True
-
-    def _GetExtraComponents(self):
-        return {'add_gloss_form': self._ObtainGlossForm()}
-
     def _GetRelevantTags(self):
         # Return all available tags
         return Tag.objects.all()
 
-    def _PreprocessRequest(self, request):
-        if request.method == 'POST':
-            self._add_gloss_form = AddGlossForm(request.POST)
-            if self._add_gloss_form.is_valid():
-                AddNewGloss(
-                    self._requested_sign,
-                    CurrentLanguageID(request),
-                    self._add_gloss_form.cleaned_data['gloss_text'])
-
-                #Clear form
-                self._add_gloss_form = AddGlossForm()
-
-        else:
-            self._add_gloss_form = AddGlossForm()
-
-    def _ObtainGlossForm(self):
-        return self._add_gloss_form
-
-
 class SignControllerView(SignController):
     def __init__(self, sign_id):
-        super(SignControllerView, self).__init__(sign_id)
+        SignController.__init__(self, sign_id)
 
-    def TemplateFile(self):
+    def _TemplateFile(self):
         return 'sign/sign_view.html'
-
-    def _AttributeIsSelected(self, attribute):
-        # When viewing a sign, an attribute is never selected
-        return False;
 
     def _GetAttributeUrl(self, attribute):
         return ViewSignsWithAttributeUrl(attribute)
 
-    def EditMode(self):
+    def _TagIsSelected(self, attribute):
+        # When viewing a sign, a tag is never selected
         return False
 
     def _GetRelevantTags(self):
