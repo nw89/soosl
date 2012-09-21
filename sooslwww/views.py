@@ -2,15 +2,15 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from sooslwww.BodyLocationRenderer import BodyLocationRenderer
-from sooslwww.controllers.AddVideoController import AddSignController, AddSentenceController
-
-import utils
 from sooslwww.LanguageChooser import SetCurrentLanguage
+from sooslwww.controllers.AddVideoController import AddSignController, AddSentenceController
 from sooslwww.controllers.AllSignsFilterController import AllSignsFilterController, SentenceAllSignsFilterController
+from sooslwww.controllers.SentenceController import SentenceControllerView, SentenceControllerEdit
 from sooslwww.controllers.SignController import SignControllerView, SignControllerEdit
 from sooslwww.models import Gloss, Sentence, Sign, Tag, WrittenLanguage, BodyLocation
-from sooslwww.controllers.SentenceController import SentenceControllerView, SentenceControllerEdit
+
+import utils
+
 
 def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
