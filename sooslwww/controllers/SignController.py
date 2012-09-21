@@ -81,11 +81,7 @@ class SignController(AbstractController):
 
 
     def __AddBodyLocationText(self, request):
-        if self._requested_sign.HasAHeadLocation():
-            body_locations = BodyLocation.objects.all()
-        else:
-            body_locations = BodyLocation.objects.filter(
-            on_head=False)
+        body_locations = self._GetBodyLocations()
 
         body_location_renderer = BodyLocationRenderer()
 
@@ -102,6 +98,7 @@ class SignController(AbstractController):
         self._AddToDictionary('body_locations_text',
                       body_locations_text)
 
+
     def _BodyLocationIsSelected(self, location):
         return self._requested_sign.HasBodyLocation(location)
 
@@ -115,6 +112,9 @@ class SignController(AbstractController):
         return 'sign/sentences.html'
 
     def _GetAttributeUrl(self, attribute):
+        raise NotImplementedError
+
+    def _GetBodyLocations(self):
         raise NotImplementedError
 
 class SignControllerEdit(SignController):
@@ -170,6 +170,15 @@ class SignControllerEdit(SignController):
         # Return all available tags
         return Tag.objects.all()
 
+    def _GetBodyLocations(self):
+        if self._requested_sign.HasAHeadLocation():
+            body_locations = BodyLocation.objects.all()
+        else:
+            body_locations = BodyLocation.objects.filter(
+            on_head=False)
+        return body_locations
+
+
 class SignControllerView(SignController):
     def __init__(self, sign_id):
         SignController.__init__(self, sign_id)
@@ -191,3 +200,6 @@ class SignControllerView(SignController):
     def _GetRelevantTags(self):
         #Return only tags the sign has
         return self._requested_sign.tags.all()
+
+    def _GetBodyLocations(self):
+        return self._requested_sign.body_locations.all()
