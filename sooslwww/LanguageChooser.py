@@ -2,8 +2,6 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django.template import Context, loader, RequestContext
 
-from sooslwww.models import WrittenLanguage
-
 
 def CurrentLanguageID(request):
    return request.session.get( 'language', getattr(settings, 'DEFAULT_LANGUAGE'))

@@ -28,7 +28,7 @@ class BodyLocationRenderer(AttributeRenderer):
         self._in_front_locations_string = ''
         self._render_head = False
 
-    def Render(self, request, template, attribute_name):
+    def Render(self, request, template):
         for location in self._attributes:
             self._RenderLocation(location)
 

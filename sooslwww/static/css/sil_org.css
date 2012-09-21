@@ -1,6 +1,4 @@
 /* CSS Document */
-@import "side_nav.css";
-
 html{
     margin-left: 0;
     margin-top: 0;
@@ -14,6 +12,41 @@ body {
     margin: 0px;
     background-color: #FFFFFF;
 }
+
+a {
+    text-decoration: underline;
+}
+a:link {
+    color: #336699;
+}
+a:hover {
+    color: #3399CC;
+    text-decoration:underline;
+}
+a:visited {
+    color: #6600CC;
+}
+a:active {
+    color: #CC3333;
+}
+td {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+th {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    text-align: left;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #999999;
+}
+
+h2 {
+   font-size: 16pt;
+}
+
 
 /*------------------------------------Top of page start------------------------------------*/
 #logo_bar{
@@ -68,42 +101,17 @@ div.icon{
 }
 
 
-#specialannouncement {
-    margin-left: 154px;
-    margin-right: 5px;
-    position:  static;
-    font-size: 120%;
-    font-style: italic;
-    font-weight: bold;
-    color: #CC0000;
-}
-
 /*------------------------------------Top of page end------------------------------------*/
-
-/*------------------------------------Contents menu section begin------------------------------------*/
-#contents_menu{
-    background-color : transparent;
-}
-#contents_menu a,
-#contents_menu a:hover,
-#contents_menu a:visited {
-    color: #336699;
-    background-color : transparent;
-    font-weight: bold;
-}
-#contents_menu a:visited{
-    color: #99CCFF;
-}
-#contents_menu a:hover{
-    color: #FFCC66;
-}
-
-/*------------------------------------Contents menu section end------------------------------------*/
 
 h1.HomeHead
 {
     margin-left: 164px
 }
+
+h2.block_label {
+    margin: 0px 0px 5px 0px;
+}
+
 
 #container {
 min-width: 716px;
@@ -119,7 +127,6 @@ min-width: 716px;
 
 #left {
     width: 134px;
-    float: left;
 }
 
 
@@ -135,6 +142,14 @@ min-width: 716px;
 div#glosses {
     width: 110px;
     margin-left: auto;
+    margin-right: auto;
+    border: 1px #999 solid;
+    padding: 5px;
+    text-align: center;
+}
+
+div#signs {
+    width: 142px;
     margin-right: auto;
     border: 1px #999 solid;
     padding: 5px;
@@ -167,6 +182,35 @@ li.gloss
     min-height: 15pt;
 }
 
+a.gloss_url, a.gloss_url_selected {
+    text-decoration: none;
+    color: #336699;
+}
+
+a.gloss_url_selected {
+    color: red;
+    font-weight: bold;
+}
+
+a.gloss_url:hover {
+    font-weight: bold;
+    color: #3399CC;
+}
+
+a.gloss_url_selected:hover {
+    text-decoration: line-through;
+
+}
+
+a#tags_link {
+    color: #999;
+    display: block;
+    text-align: center;
+    margin: 5px;
+}
+
+
+
 div#tag_grid, div#tag_grid_top {
     border: 1px #999 solid;
 }
@@ -174,6 +218,7 @@ div#tag_grid, div#tag_grid_top {
 div#tag_grid
 {
     margin-right: auto;
+    margin-bottom: 20px;
     width: 102px;
     text-align: center;
 
@@ -190,209 +235,17 @@ div#body_locations {
     border: 1px #999 solid;
     padding: 5px;
 }
-#abstract {
-    margin-right: 30px;
-    margin-left: 30px;
+
+img.sign_thumbnail, img.sign_thumbnail_edit {
+    border: 1px #999 solid;
+    padding: 1px;
+    margin: 5px;
+    height: 96px;
+    width: 128px;
+    display: inline-block;
+    background-color: #fff;
 }
 
-#poetry {
-    text-align: center;
-}
-
-#announcement {
-}
-#footer {
-    text-align: center;
-    clear: left;
-}
-
-a {
-    text-decoration: underline;
-}
-a:link {
-    color: #336699;
-}
-a:hover {
-    color: #3399CC;
-    text-decoration:underline;
-}
-a:visited {
-    color: #6600CC;
-}
-a:active {
-    color: #CC3333;
-}
-td {
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-th {
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    text-align: left;
-}
-
-h1, h2, h3, h4, h5 {
-    color: #999999;
-}
-
-h2 {
-   font-size: 16pt;
-}
-
-h2.block_label {
-    margin: 0px 0px 5px 0px;
-}
-
-.bullets_by_pix { /*Lists appearing to the right of a pix lose their bullets, use as <ul class="bullets_by_pix"> */
-    list-style-position: inside;
-}
-
-#3columns {
-    margin-right: 20px;
-    width: 25%;
-    float: left;
-}
-#ThreeColumns {
-    margin-right: 20px;
-    width: 25%;
-    float: left;
-}
-.3columns {
-    margin-right: 20px;
-    width: 25%;
-    float: left;
-}
-.ThreeColumns {
-    margin-right: 20px;
-    width: 25%;
-    float: left;
-}
-.announcement {
-    color: #FF0000;
-    font-style: italic;
-}
-.article_nav {
-    text-align: right;
-}
-.biblio {
-    padding-left: 1em;
-    text-indent: -1em;
-}
-.breadtrail {
-    font-size: 80%;
-    color: #999999;
-}
-.breadcrumbs { /*changed the terminology*/
-    font-size: 80%;
-    color: #999999;
-}
-.bottommenu {
-    font-weight: bold;
-}
-.callout {
-    background-color: #FFFFCC;
-    border: thin solid #000000;
-    padding: 5px;
-}
-.centercontent {
-    text-align: center;
-}
-.codeExample {
-    font-family: "Courier New", Courier, mono;
-    font-size: small;
-}
-.copyright {
-    font-size: smaller;
-    text-align: center;
-}
-.experience {
-    padding-left: 6em;
-    text-indent: -6em;
-}
-.filename {
-    font-family: "Courier New", Courier, mono;
-}
-.footnote {
-    font-size: 90%;
-}
-.inlinetitle {
-    font-weight: bold;
-}
-.itemlabel {
-    font-weight: bold;
-}
-.jobtitle {
-    font-weight: bold;
-}
-.listNoBullet {
-    list-style-type: none;
-    list-style-image: none;
-}
-.mission {
-    font-style: italic;
-}
-.pixwithcaptions { /*forces centered alignment*/
-    text-align: center;
-    font-size: smaller;
-}
-.pixCaption { /*inherits paragraph alignment*/
-    font-size: smaller;
-    padding-bottom: 10px;
-}
-.thumbnail {
-    padding: 10px;
-}
-.thumbnailCaptionRight {
-    font-size: smaller;
-    padding-left: 10px;
-}
-.poetry {
-    text-align: center;
-}
-.pubtitle {
-    font-style: italic;
-}
-.quotation {
-    font-size: smaller;
-}
-#quotationIndent {
-    margin-right: 3em;
-    margin-left: 3em;
-}
-.quotationIndent {
-    margin-right: 3em;
-    margin-left: 3em;
-}
-.quotationAuthor {
-    text-align: right;
-}
-.rosterpix {
-    margin-right: 20px;
-    clear: right;
-    margin-left: 110px;
-}
-.smalltext{
-    font-size: .75em;
-}
-.subhome_pix{
-    float: none;
-    clear: left;
-}
-.subhome_title{
-    font-weight: bold;
-}
-.subhome_text {
-}
-.subtitle {
-    font-size: smaller;
-}
-.title {
-    font-style: italic;
-}
-.vernacular {
-    font-style: italic;
-}
-.warning  {
-    color: #FF0000;
+img.sign_thumbnail_edit:hover {
+    opacity: 0.5;
 }

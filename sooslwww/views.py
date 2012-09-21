@@ -1,22 +1,16 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.forms.util import ErrorList
 from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import Context, RequestContext
-
-from sooslwww.forms import AddSignForm
-from sooslwww.models import Gloss, Sign, Tag, WrittenLanguage, BodyLocation
-
-from sooslwww.LanguageChooser import SetCurrentLanguage
-from sooslwww.videoHandler import VideoUploadHandler
-
-from sooslwww.controllers.AllSignsFilterController import AllSignsFilterController
-from sooslwww.controllers.SignController import SignControllerView, SignControllerEdit
-
-from sooslwww.BodyLocationRenderer import GetSVGForSign, BodyLocationRenderer
+from django.shortcuts import get_object_or_404
+from sooslwww.BodyLocationRenderer import BodyLocationRenderer
+from sooslwww.controllers.AddVideoController import AddSignController, AddSentenceController
 
 import utils
+from sooslwww.LanguageChooser import SetCurrentLanguage
+from sooslwww.controllers.AllSignsFilterController import AllSignsFilterController, SentenceAllSignsFilterController
+from sooslwww.controllers.SignController import SignControllerView, SignControllerEdit
+from sooslwww.models import Gloss, Sentence, Sign, Tag, WrittenLanguage, BodyLocation
+from sooslwww.controllers.SentenceController import SentenceControllerView, SentenceControllerEdit
 
 def index(request):
     return HttpResponse("Hello, world. You're at the poll index.")
@@ -44,6 +38,14 @@ def sign(request, sign_id):
 
 def edit_sign(request, sign_id):
     controller = SignControllerEdit(sign_id)
+    return controller.Render(request)
+
+def sentence(request, sentence_id):
+    controller = SentenceControllerView(sentence_id)
+    return controller.Render(request)
+
+def sentence_edit(request, sentence_id):
+    controller = SentenceControllerEdit(sentence_id)
     return controller.Render(request)
 
 def add_tag(request, sign_id, tag_id):
@@ -93,9 +95,8 @@ def add_remove_body_location(request,
         requested_sign.AddBodyLocation(body_location)
 
     return HttpResponseRedirect(
-        reverse('sooslwww.views.body_location_view',
-                args=(requested_sign.id,)
-                ))
+        reverse('sooslwww.views.edit_sign', args=(requested_sign.id,))
+        )
 
 
 def remove_gloss(request, sign_id, gloss_id):
@@ -115,57 +116,12 @@ def all_signs_filter(request, filter_string):
     return controller.Render(request)
 
 def add_sign(request):
-    if request.method == 'POST':
-        form = AddSignForm(request.POST, request.FILES)
-        if form.is_valid():
-            uploadedVideo = request.FILES['videoFile'];
+    controller = AddSignController()
+    return controller.Render(request)
 
-            videoHandler = VideoUploadHandler(uploadedVideo)
-
-            #Check to see if the video has been updated already
-            if Sign.objects.filter(videohash=videoHandler.hash()):
-                errors = form._errors.setdefault(
-                    "videoFile", ErrorList())
-                errors.append("That video has already been uploaded.")
-
-            else:
-                #Proceed to save it
-                success = videoHandler.encodeVideo()
-
-                if not success:
-                    errors = form._errors.setdefault(
-                    "videoFile", ErrorList())
-                    errors.append("That video could not be converted.")
-                else:
-                    newsign = Sign(videohash=videoHandler.hash())
-                    newsign.save()
-                    return HttpResponseRedirect(
-                        reverse('sooslwww.views.sign', args=(newsign.id,))
-                        )
-
-
-    else:
-        form = AddSignForm()
-    return render_to_response(
-        'addsign.html',
-        {'form': form},
-        context_instance=RequestContext(request)
-        )
-
-def body_location_view(request, sign_id):
-    return body_location(request, sign_id, False)
-
-def body_location_edit(request, sign_id):
-    return body_location(request, sign_id, True)
-
-def body_location(request, sign_id, edit):
-    requested_sign = get_object_or_404(Sign, id=sign_id)
-
-    svg = GetSVGForSign(requested_sign, edit, request)
-
-    response = HttpResponse(mimetype = "image/svg+xml")
-    response.write(svg)
-    return response
+def add_sentence(request):
+    controller = AddSentenceController()
+    return controller.Render(request)
 
 def body_location_all(request):
     return body_location_filter(request, '')
@@ -179,10 +135,104 @@ def body_location_filter(request, filter_string):
     return response;
 
 def select_language(request, language_id):
-    if not WrittenLanguage.objects.filter(id=language_id).exists():
+    if not WrittenLanguage.objects.filter(id=int(language_id)).exists():
         raise Http404
 
-    SetCurrentLanguage(request, language_id)
+    SetCurrentLanguage(request, int(language_id))
+    return HttpResponseRedirect(request.path[0:-18])
+
+
+def sign_thumbnail(request, sign_id):
+    requested_sign = get_object_or_404(Sign, id=sign_id)
+
+    filePath = "%s/videos/thumbnails/%s.gif" % (
+        getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
+
+    return utils.generateFileHttpResponse(filePath, "image/gif");
+
+
+def sentence_video(request, sentence_id):
+    requested_sentence = get_object_or_404(Sentence, id=sentence_id)
+
+    filePath = "%s/videos/mp4/%s.mp4" % (
+        getattr(settings, 'MEDIA_ROOT'), requested_sentence.videohash)
+
+    return utils.generateFileHttpResponse(filePath, "video/mp4");
+
+def sign_video(request, sign_id):
+    requested_sign = get_object_or_404(Sign, id=sign_id)
+
+    filePath = "%s/videos/mp4/%s.mp4" % (
+        getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
+
+    return utils.generateFileHttpResponse(filePath, "video/mp4")
+
+def sentence_thumbnail(request, sentence_id):
+    requested_sentence = get_object_or_404(Sentence, id=sentence_id)
+
+    filePath = "%s/videos/thumbnails/%s.gif" % (
+        getattr(settings, 'MEDIA_ROOT'), requested_sentence.videohash)
+
+    return utils.generateFileHttpResponse(filePath, "image/gif")
+
+def sentence_all_signs(request, sentence_id):
+    return sentence_all_signs_filter(request, sentence_id, '')
+
+def sentence_all_signs_filter(request, sentence_id, filter_string):
+    requested_sentence = get_object_or_404(Sentence, id=sentence_id)
+    controller = SentenceAllSignsFilterController(
+        requested_sentence,
+        filter_string)
+    return controller.Render(request)
+
+def sentence_add_sign(request, sentence_id, sign_id):
+    return sentence_add_remove_sign(request,
+                           sentence_id,
+                           sign_id,
+                           False)
+
+def sentence_remove_sign(request, sentence_id, sign_id):
+    return sentence_add_remove_sign(request,
+                           sentence_id,
+                           sign_id,
+                           True)
+
+def sentence_add_remove_sign(request,
+                             sentence_id,
+                             sign_id,
+                             remove_sign):
+    requested_sentence = get_object_or_404(Sentence,
+                                           id=sentence_id)
+
+    sign = get_object_or_404(Sign,
+                             id=sign_id)
+
+    if remove_sign:
+        requested_sentence.signs.remove(sign)
+    else:
+        requested_sentence.signs.add(sign)
+
+    return HttpResponseRedirect(
+        reverse('sooslwww.views.sentence_edit'
+                , args=(requested_sentence.id,))
+        )
+
+def body_location_all(request):
+    return body_location_filter(request, '')
+
+def body_location_filter(request, filter_string):
+    controller = AllSignsFilterController(filter_string)
+    svg = controller.RenderBodyLocations(request)
+
+    response = HttpResponse(mimetype = "image/svg+xml")
+    response.write(svg)
+    return response;
+
+def select_language(request, language_id):
+    if not WrittenLanguage.objects.filter(id=int(language_id)).exists():
+        raise Http404
+
+    SetCurrentLanguage(request, int(language_id))
     return HttpResponseRedirect(request.path[0:-18])
 
 
@@ -193,11 +243,3 @@ def thumbnail(request, sign_id):
         getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
 
     return utils.generateFileHttpResponse(filePath, "image/gif");
-
-def video(request, sign_id):
-    requested_sign = get_object_or_404(Sign, id=sign_id)
-
-    filePath = "%s/videos/mp4/%s.mp4" % (
-        getattr(settings, 'MEDIA_ROOT'), requested_sign.videohash)
-
-    return utils.generateFileHttpResponse(filePath, "video/mp4");

@@ -1,0 +1,3 @@
+{% for sign in signs %}
+  <a href="{{ sign.url }}"><img class="sign_thumbnail" src="{% url sooslwww.views.sign_thumbnail sign.model.id %}" alt="{{ sign.model.text }}" /></a>
+{% endfor %}

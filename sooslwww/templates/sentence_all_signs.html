@@ -1,0 +1,5 @@
+{% extends "all_signs.html" %}
+
+{% block title %}Add sign to filter{% endblock %}
+
+{% block sign_url %}{% url sooslwww.views.sentence_add_sign sentence.id  sign.id %}{% endblock %}

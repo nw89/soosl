@@ -22,6 +22,12 @@
       <img src="{{ STATIC_URL }}images/add_sign.png"  />
     </a>
   </div>
+  <div class="icon">
+    <a href="{% url sooslwww.views.add_sentence %}">
+      <img src="{{ STATIC_URL }}images/add_sentence.png"  />
+    </a>
+  </div>
+
 </div>
 <div id="nav_top">
   <div class="nav_link">
@@ -29,6 +35,9 @@
   </div>
   <div class="nav_link">
     <a class="menuItem" href="{% url sooslwww.views.add_sign %}">ADD SIGN</a>
+  </div>
+  <div class="nav_link">
+    <a class="menuItem" href="{% url sooslwww.views.add_sentence %}">ADD SENTENCE</a>
   </div>
 </div>
 

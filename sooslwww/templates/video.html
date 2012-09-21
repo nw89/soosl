@@ -1,0 +1,14 @@
+{% extends "master.html" %}
+
+{% block scripts %}
+  {% include "sign/video_player_head.html" %}
+{% endblock %}
+
+{% block content %}
+<div id="{% block video_div_id %}{% endblock %}">
+<video id="h264" src="{% block video_url %}{% endblock %}"></video>
+</div>
+
+{% block below_video %}{% endblock %}
+
+{% endblock %}

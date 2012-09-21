@@ -24,7 +24,7 @@
 
 <div id="signs_grid">
 {% for sign in all_signs %}
-<a href="{% url sooslwww.views.sign sign.id %}"><img class="sign_thumbnail" src="{% url sooslwww.views.thumbnail sign.id %}" alt="sign" /></a>
+<a href="{% block sign_url %}{% url sooslwww.views.sign sign.id %}{% endblock %}"><img class="sign_thumbnail" src="{% url sooslwww.views.sign_thumbnail sign.id %}" alt="sign" /></a>
 {% endfor %}
 </div>
 <div id="body_locations">

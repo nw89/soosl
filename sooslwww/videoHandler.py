@@ -5,6 +5,9 @@ import os
 
 from django.conf import settings
 
+class BadVideo(Exception):
+    pass
+
 class VideoUploadHandler():
     def __init__(self, uploadedFile):
         self._workingFileName = getattr(settings, 'MEDIA_ROOT') + "/videos/tmp/" + uploadedFile.name
@@ -59,13 +62,11 @@ class VideoUploadHandler():
     def encodeVideo(self):
         success = self.generateMP4()
         if not success:
-            return False
+            raise BadVideo
 
         success = self.generateThumbnail()
         if not success:
-            return False
-
-        return True
+            raise BadVideo
 
 
     def generateMP4(self):

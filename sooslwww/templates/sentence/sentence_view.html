@@ -1,0 +1,22 @@
+{% extends "video.html" %}
+
+{% block title %}View Sentence{% endblock %}
+
+{% block customcss %}
+{% endblock %}
+
+{% block left %}
+{% endblock %}
+
+{% block video_url %}{% url sooslwww.views.sentence_video sentence.id %}{% endblock %}
+
+{% block below_video %}
+{% endblock %}
+
+{% block right %}
+<div id="signs">
+  <h2 class="block_label">Signs</h2>
+  {{sign_text}}
+  <a id="tags_link" href="{% url sooslwww.views.sentence_edit sentence.id %}">Edit</a>
+</div>
+{% endblock %}

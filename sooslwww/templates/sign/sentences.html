@@ -1,0 +1,3 @@
+{% for sentence in sentences %}
+  <a href="{{ sentence.url }}"><img class="sign_thumbnail" src="{% url sooslwww.views.sentence_thumbnail sentence.model.id %}" alt="{{ sentence.model.text }}" /></a>
+{% endfor %}

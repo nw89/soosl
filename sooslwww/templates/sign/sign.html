@@ -1,8 +1,4 @@
-{% extends "master.html" %}
-
-{% block scripts %}
-  {% include "sign/video_player_head.html" %}
-{% endblock %}
+{% extends "video.html" %}
 
 {% block title %}View Sign{% endblock %}
 
@@ -20,13 +16,12 @@
 </div>
 {% endblock %}
 
-{% block content %}
-<div id="{% block video_div_id %}{% endblock %}">
-<video id="h264" src="{% url sooslwww.views.video sign.id %}"></video>
-</div>
+{% block video_url %}{% url sooslwww.views.sign_video sign.id %}{% endblock %}
+
+{% block below_video %}
 <div id="body_locations">
   <h2 class="block_label">Locations</h2>
-  {% block below_video %}{% endblock %}
+  {{ body_locations_text }}
 </div>
 {% endblock %}
 
@@ -36,6 +31,11 @@
     {{ tag_text }}
     {% block below_tags %}{% endblock %}
   </div>
+  <div id="signs">
+    <h2 class="block_label">Sentences</h2>
+    {{ sentence_text }}
+  </div>
+
 
 </div>
 

@@ -26,27 +26,40 @@ class WrittenLanguage(models.Model):
 
     name = models.TextField()
 
-class Dialect(models.Model):
-    def __unicode____(self):
-        return self.name
+# class Dialect(models.Model):
+#     def __unicode____(self):
+#         return self.name
 
-    language = models.ForeignKey(WrittenLanguage)
-    name = models.TextField()
+#     language = models.ForeignKey(WrittenLanguage)
+#     name = models.TextField()
 
 
-class Gloss(models.Model):
-    @staticmethod
-    def AttributesString():
-        return 'glosses'
-
+class TextWithLanguage(models.Model):
     def __unicode__(self):
         return self.text
 
     language = models.ForeignKey(WrittenLanguage)
+
+    class Meta:
+        abstract = True
+
+class Gloss(TextWithLanguage):
     text = models.TextField(max_length = 128)
 
-    dialects = models.ManyToManyField(Dialect, blank=True, null=True)
+    @staticmethod
+    def AttributesString():
+        return 'glosses'
 
+class SentenceGloss(TextWithLanguage):
+    text = models.TextField(max_length = 1024)
+    glosses = models.ManyToManyField(
+        Gloss,
+        through='SentenceGlossRelationship')
+
+class SentenceGlossRelationship(models.Model):
+    gloss = models.ForeignKey(Gloss)
+    sentenceGloss = models.ForeignKey(SentenceGloss)
+    wordNumber=models.IntegerField()
 
 class BodyHeadLocationType(models.Model):
     text=models.CharField(max_length=64)
@@ -76,7 +89,7 @@ class BodyLocation(models.Model):
         return (BodyLocation.objects.get(
         id=BodyLocation.HEAD_ID))
 
-    #The following fields allow the subclass to be obtained from this (paretn class)
+    #The following fields allow the subclass to be obtained from this (parent class)
     shape = models.ForeignKey(ContentType,editable=False)
 
     def save(self,force_insert=False,force_update=False):
@@ -126,13 +139,34 @@ class BodyLocationPolygonPoint(models.Model):
     x=models.DecimalField(max_digits=5,decimal_places=2)
     y=models.DecimalField(max_digits=5,decimal_places=2)
 
-class Sign(models.Model):
+class Video (models.Model):
     def __unicode__(self):
         return self.videohash
 
     videohash = models.CharField(max_length = 40)
     deleted = models.BooleanField(False)
 
+    @staticmethod
+    def GetByHash(video_hash):
+        return (Video.objects.get(videohash=video_hash).\
+                get_instance())
+
+    @staticmethod
+    def UploadedAlready(video_hash):
+        return (Video.objects.filter(videohash=video_hash).exists())
+
+    #The following fields allow the subclass to be obtained from this (parent class)
+    video_type = models.ForeignKey(ContentType,editable=False)
+
+    def save(self,force_insert=False,force_update=False):
+        if self.video_type_id is None:
+            self.video_type = ContentType.objects.get_for_model(self.__class__)
+            super(Video,self).save(force_insert,force_update)
+
+    def get_instance(self):
+        return self.video_type.get_object_for_this_type(id=self.id)
+
+class Sign(Video):
     tags = models.ManyToManyField(Tag, blank=True, null=True);
     glosses = models.ManyToManyField(Gloss, blank=True, null=True)
     body_locations = models.ManyToManyField(BodyLocation,
@@ -184,13 +218,6 @@ class Sign(models.Model):
         return(self.body_locations.filter(
             id=BodyLocation.GetHead().id).exists())
 
-    def RemoveBodyLocation(self, location):
-        self.body_locations.remove(location)
-
-        if location.IsHead():
-            self._RemoveHeadLocations()
-
-
     def _RemoveHeadLocations(self):
         head_locations = BodyLocation.objects.filter(on_head=True)
 
@@ -203,6 +230,30 @@ class Sign(models.Model):
         if location.on_head:
             self.AddBodyLocation(BodyLocation.GetHead())
 
+    def RemoveBodyLocation(self, location):
+        self.body_locations.remove(location)
+
+        if location.IsHead():
+            self._RemoveHeadLocations()
+
     def GlossesForLanguage(self, language_id):
         return (self.glosses.filter(
             language__id=language_id))
+
+    def GetSentences(self):
+        return Sentence.objects.filter(signs__id__exact=self.id)
+
+class Sentence(Video):
+    signs = models.ManyToManyField(Sign, blank=True, null=True)
+    glosses = models.ManyToManyField(SentenceGloss,
+                                     blank=True,
+                                     null=True)
+
+    def GetSigns(self):
+        return self.signs.all()
+
+    def AddSign(self, sign):
+        self.signs.add(sign)
+
+    def RemoveSign(self, sign):
+        self.signs.remove(sign)
