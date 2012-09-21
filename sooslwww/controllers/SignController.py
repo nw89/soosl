@@ -161,7 +161,7 @@ class SignControllerEdit(SignController):
             url =  AddAttributeUrl(self._requested_sign,
                                    attribute)
 
-            return url
+        return url
 
     def _GlossTemplateFile(self):
         return 'sign/sign_glosses_edit.html'
